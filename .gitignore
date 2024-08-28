@@ -1,0 +1,9 @@
+# Git ignore patterns
+
+/bazel-*
+user.bazelrc
+
+/*venv*/
+/.vscode/
+
+/rust-project.json

@@ -1,0 +1,38 @@
+load("@rules_rust//rust:defs.bzl", "rust_library_group")
+load("//pyo3:defs.bzl", "pyo3_toolchain", "rust_pyo3_toolchain")
+
+rust_library_group(
+    name = "pyo3",
+    deps = [
+        "@rpyo3c//:pyo3",
+        "@rpyo3c//:pyo3-ffi",
+    ],
+)
+
+rust_pyo3_toolchain(
+    name = "rust_pyo3_toolchain",
+    pyo3 = ":pyo3",
+)
+
+toolchain(
+    name = "rust_toolchain",
+    toolchain = ":rust_pyo3_toolchain",
+    toolchain_type = "//pyo3:rust_toolchain_type",
+)
+
+pyo3_toolchain(
+    name = "pyo3_toolchain",
+    abi3 = True,
+    pointer_width = select({
+        "@platforms//cpu:aarch32": 32,
+        "@platforms//cpu:i386": 32,
+        "//conditions:default": 64,
+    }),
+    shared = True,
+)
+
+toolchain(
+    name = "toolchain",
+    toolchain = ":pyo3_toolchain",
+    toolchain_type = "//pyo3:toolchain_type",
+)

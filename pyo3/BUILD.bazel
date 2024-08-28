@@ -1,0 +1,31 @@
+load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
+load("//pyo3/private:pyo3_toolchain.bzl", "current_pyo3_toolchain")
+
+exports_files([
+    "defs.bzl",
+])
+
+toolchain_type(
+    name = "toolchain_type",
+    visibility = ["//visibility:public"],
+)
+
+toolchain_type(
+    name = "rust_toolchain_type",
+    visibility = ["//visibility:public"],
+)
+
+current_pyo3_toolchain(
+    name = "current_pyo3_toolchain",
+    visibility = ["//visibility:public"],
+)
+
+bzl_library(
+    name = "bzl_lib",
+    srcs = glob(["*.bzl"]),
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pyo3/3rdparty:bzl_lib",
+        "//pyo3/private:bzl_lib",
+    ],
+)
