@@ -6,13 +6,12 @@
 #     bazel run @//pyo3/3rdparty:crates_vendor
 ###############################################################################
 
-load("@rules_rust//cargo:defs.bzl", "cargo_build_script")
 load("@rules_rust//rust:defs.bzl", "rust_library")
 
 package(default_visibility = ["//visibility:public"])
 
 rust_library(
-    name = "proc_macro2",
+    name = "pyo3_stub_gen",
     srcs = glob(
         include = ["**/*.rs"],
         allow_empty = True,
@@ -31,16 +30,19 @@ rust_library(
     ),
     crate_features = [
         "default",
-        "proc-macro",
+        "numpy",
     ],
     crate_root = "src/lib.rs",
     edition = "2021",
+    proc_macro_deps = [
+        "@rpyo3c__pyo3-stub-gen-derive-0.6.0//:pyo3_stub_gen_derive",
+    ],
     rustc_flags = [
         "--cap-lints=allow",
     ],
     tags = [
         "cargo-bazel",
-        "crate-name=proc-macro2",
+        "crate-name=pyo3-stub-gen",
         "manual",
         "noclippy",
         "norustfmt",
@@ -82,55 +84,17 @@ rust_library(
         "@rules_rust//rust/platform:x86_64-unknown-none": [],
         "//conditions:default": ["@platforms//:incompatible"],
     }),
-    version = "1.0.86",
+    version = "0.6.0",
     deps = [
-        "@rpyo3c__proc-macro2-1.0.86//:build_script_build",
-        "@rpyo3c__unicode-ident-1.0.12//:unicode_ident",
+        "@rpyo3c__anyhow-1.0.86//:anyhow",
+        "@rpyo3c__inventory-0.3.15//:inventory",
+        "@rpyo3c__itertools-0.13.0//:itertools",
+        "@rpyo3c__log-0.4.22//:log",
+        "@rpyo3c__maplit-1.0.2//:maplit",
+        "@rpyo3c__num-complex-0.4.6//:num_complex",
+        "@rpyo3c__numpy-0.21.0//:numpy",
+        "@rpyo3c__pyo3-0.21.2//:pyo3",
+        "@rpyo3c__serde-1.0.209//:serde",
+        "@rpyo3c__toml-0.8.19//:toml",
     ],
-)
-
-cargo_build_script(
-    name = "_bs",
-    srcs = glob(
-        include = ["**/*.rs"],
-        allow_empty = True,
-    ),
-    crate_features = [
-        "default",
-        "proc-macro",
-    ],
-    crate_name = "build_script_build",
-    crate_root = "build.rs",
-    data = glob(
-        include = ["**"],
-        allow_empty = True,
-        exclude = [
-            "**/* *",
-            ".tmp_git_root/**/*",
-            "BUILD",
-            "BUILD.bazel",
-            "WORKSPACE",
-            "WORKSPACE.bazel",
-        ],
-    ),
-    edition = "2021",
-    pkg_name = "proc-macro2",
-    rustc_flags = [
-        "--cap-lints=allow",
-    ],
-    tags = [
-        "cargo-bazel",
-        "crate-name=proc-macro2",
-        "manual",
-        "noclippy",
-        "norustfmt",
-    ],
-    version = "1.0.86",
-    visibility = ["//visibility:private"],
-)
-
-alias(
-    name = "build_script_build",
-    actual = ":_bs",
-    tags = ["manual"],
 )

@@ -32,6 +32,9 @@ crates_vendor(
         "pyo3-ffi": crate.spec(
             version = "0.21.0",
         ),
+        "pyo3-stub-gen": crate.spec(
+            version = "0.6.0",
+        ),
     },
     # Name is short to avoid windows paths being too long
     # https://github.com/bazelbuild/rules_rust/issues/1120

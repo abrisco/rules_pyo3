@@ -11,6 +11,7 @@ rust_library_group(
 rust_pyo3_toolchain(
     name = "rust_pyo3_toolchain",
     pyo3 = ":pyo3",
+    pyo3_stub_gen = "@rpyo3c//:pyo3-stub-gen",
 )
 
 toolchain(

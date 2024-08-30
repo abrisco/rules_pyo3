@@ -12,7 +12,7 @@ load("@rules_rust//rust:defs.bzl", "rust_library")
 package(default_visibility = ["//visibility:public"])
 
 rust_library(
-    name = "proc_macro2",
+    name = "matrixmultiply",
     srcs = glob(
         include = ["**/*.rs"],
         allow_empty = True,
@@ -30,17 +30,17 @@ rust_library(
         ],
     ),
     crate_features = [
-        "default",
-        "proc-macro",
+        "cgemm",
+        "std",
     ],
     crate_root = "src/lib.rs",
-    edition = "2021",
+    edition = "2018",
     rustc_flags = [
         "--cap-lints=allow",
     ],
     tags = [
         "cargo-bazel",
-        "crate-name=proc-macro2",
+        "crate-name=matrixmultiply",
         "manual",
         "noclippy",
         "norustfmt",
@@ -82,10 +82,10 @@ rust_library(
         "@rules_rust//rust/platform:x86_64-unknown-none": [],
         "//conditions:default": ["@platforms//:incompatible"],
     }),
-    version = "1.0.86",
+    version = "0.3.9",
     deps = [
-        "@rpyo3c__proc-macro2-1.0.86//:build_script_build",
-        "@rpyo3c__unicode-ident-1.0.12//:unicode_ident",
+        "@rpyo3c__matrixmultiply-0.3.9//:build_script_build",
+        "@rpyo3c__rawpointer-0.2.1//:rawpointer",
     ],
 )
 
@@ -96,8 +96,8 @@ cargo_build_script(
         allow_empty = True,
     ),
     crate_features = [
-        "default",
-        "proc-macro",
+        "cgemm",
+        "std",
     ],
     crate_name = "build_script_build",
     crate_root = "build.rs",
@@ -113,20 +113,23 @@ cargo_build_script(
             "WORKSPACE.bazel",
         ],
     ),
-    edition = "2021",
-    pkg_name = "proc-macro2",
+    edition = "2018",
+    pkg_name = "matrixmultiply",
     rustc_flags = [
         "--cap-lints=allow",
     ],
     tags = [
         "cargo-bazel",
-        "crate-name=proc-macro2",
+        "crate-name=matrixmultiply",
         "manual",
         "noclippy",
         "norustfmt",
     ],
-    version = "1.0.86",
+    version = "0.3.9",
     visibility = ["//visibility:private"],
+    deps = [
+        "@rpyo3c__autocfg-1.3.0//:autocfg",
+    ],
 )
 
 alias(

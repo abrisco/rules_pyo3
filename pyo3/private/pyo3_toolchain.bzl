@@ -1,5 +1,6 @@
 """PyO3 Toolchains"""
 
+load("@bazel_skylib//rules:common_settings.bzl", "BuildSettingInfo")
 load("@rules_rust//rust:defs.bzl", "rust_common")
 
 PYO3_TOOLCHAIN = str(Label("//pyo3:toolchain_type"))
@@ -93,6 +94,7 @@ def _pyo3_toolchain_impl(ctx):
             pyo3_config_file = pyo3_config_file,
             make_variable_info = make_variable_info,
             python_libs = depset(libs),
+            experimental_stubgen = ctx.attr._experimental_stubgen[BuildSettingInfo].value,
         ),
         make_variable_info,
         DefaultInfo(
@@ -149,6 +151,9 @@ annotations = {
             allow_single_file = True,
             default = Label("//pyo3/private:pyo3_build_config.txt"),
         ),
+        "_experimental_stubgen": attr.label(
+            default = Label("//pyo3/settings:experimental_stubgen"),
+        ),
         "_defaults": attr.label(
             default = Label("//pyo3/private:pyo3_toolchain_defaults"),
         ),
@@ -195,6 +200,7 @@ def _rust_pyo3_toolchain_impl(ctx):
     return [
         platform_common.ToolchainInfo(
             pyo3 = ctx.attr.pyo3,
+            pyo3_stub_gen = ctx.attr.pyo3_stub_gen,
         ),
     ]
 
@@ -211,12 +217,17 @@ This toolchain is how the rules know which version of `pyo3` to link against.
             providers = [[rust_common.crate_info], [rust_common.crate_group_info]],
             mandatory = True,
         ),
+        "pyo3_stub_gen": attr.label(
+            doc = "The pyo3-stub-gen library.",
+            providers = [[rust_common.crate_info], [rust_common.crate_group_info]],
+        ),
     },
 )
 
-def _current_rust_pyo3_toolchain_impl(ctx):
-    toolchain = ctx.toolchains[RUST_PYO3_TOOLCHAIN]
-    target = toolchain.pyo3
+def _current_rust_pyo3_toolchain_impl(ctx, target = None):
+    if not target:
+        toolchain = ctx.toolchains[RUST_PYO3_TOOLCHAIN]
+        target = toolchain.pyo3
 
     providers = []
 
@@ -246,4 +257,32 @@ current_rust_pyo3_toolchain = rule(
     doc = "A rule for accessing the `rust_pyo3_toolchain.pyo3` library from the current configuration.",
     implementation = _current_rust_pyo3_toolchain_impl,
     toolchains = [RUST_PYO3_TOOLCHAIN],
+)
+
+def _current_rust_pyo3_stub_gen_toolchain_impl(ctx):
+    pyo3_toolchain = ctx.toolchains[PYO3_TOOLCHAIN]
+    rust_pyo3_toolchain = ctx.toolchains[RUST_PYO3_TOOLCHAIN]
+
+    if pyo3_toolchain.experimental_stubgen:
+        if not rust_pyo3_toolchain.pyo3_stub_gen:
+            fail("The current pyo3_toolchain does not have a `pyo3_stub_gen` attribute yet `experimental_stubgen` is enabled. Please update the current toolchain.")
+        return _current_rust_pyo3_toolchain_impl(ctx, rust_pyo3_toolchain.pyo3_stub_gen)
+
+    if not rust_pyo3_toolchain.pyo3_stub_gen:
+        return [
+            DefaultInfo(),
+            rust_common.crate_group_info(
+                dep_variant_infos = depset(),
+            ),
+        ]
+
+    return _current_rust_pyo3_toolchain_impl(ctx, rust_pyo3_toolchain.pyo3_stub_gen)
+
+current_rust_pyo3_stub_gen_toolchain = rule(
+    doc = "TODO",
+    implementation = _current_rust_pyo3_stub_gen_toolchain_impl,
+    toolchains = [
+        PYO3_TOOLCHAIN,
+        RUST_PYO3_TOOLCHAIN,
+    ],
 )
