@@ -2,6 +2,9 @@
 
 Bazel rules for [PyO3](https://pyo3.rs/v0.22.2/).
 
+These rules use the hermetic toolchain infrastructure from [rules_python](https://github.com/bazelbuild/rules_python) to
+build PyO3 extension modules to be as reproducible as possible.
+
 ## Setup
 
 In order to use `rules_pyo3` it's recommended to first setup your `rules_rust`
@@ -37,6 +40,15 @@ load("@rules_pyo3//pyo3:repositories_transitive.bzl", "rules_pyo3_transitive_dep
 
 rules_pyo3_transitive_deps()
 ```
+
+### Toolchains
+
+Information about each toolchan can be seen below and in the rule's documentation.
+
+| rule | type | mandatory | details |
+| --- | --- | --- | --- | 
+| [rust_pyo3_toolchain](#rust_pyo3_toolchain) | `@rules_pyo3//pyo3:rust_toolchain_type` | true | Required by the rules to determine what `pyo3` library to link. |
+| [pyo3_toolchain](#pyo3_toolchain) | `@rules_pyo3//pyo3:toolchain_type` | false | Used to help build `pyo3`. Users who are building `pyo3` in other ways do not need to set this. | 
 
 ## Rules
 
