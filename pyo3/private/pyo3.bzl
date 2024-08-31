@@ -148,31 +148,27 @@ def pyo3_extension(
     tags = kwargs.pop("tags", [])
     visibility = kwargs.pop("visibility", [])
 
-    lib_kwargs = dict(
+    rust_shared_library(
+        name = name + "_shared",
         aliases = aliases,
         compile_data = compile_data,
         crate_features = crate_features,
-        crate_name = name,
+        crate_name = kwargs.pop("crate_name", name),
+        crate_root = crate_root,
         data = data,
+        deps = [
+            Label("//pyo3/private:current_rust_pyo3_toolchain"),
+            Label("@rules_python//python/cc:current_py_cc_libs"),
+        ] + deps,
         edition = edition,
         proc_macro_deps = proc_macro_deps,
         rustc_env = rustc_env,
         rustc_env_files = rustc_env_files,
         rustc_flags = rustc_flags,
+        srcs = srcs,
         tags = depset(tags + ["manual"]).to_list(),
         version = version,
         **kwargs
-    )
-
-    rust_shared_library(
-        name = name + "_shared",
-        crate_root = crate_root,
-        srcs = srcs,
-        deps = [
-            "//pyo3/private:current_rust_pyo3_toolchain",
-            "@rules_python//python/cc:current_py_cc_libs",
-        ] + deps,
-        **lib_kwargs
     )
 
     py_pyo3_library(
