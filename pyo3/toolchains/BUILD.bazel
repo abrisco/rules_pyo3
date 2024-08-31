@@ -23,11 +23,6 @@ toolchain(
 pyo3_toolchain(
     name = "pyo3_toolchain",
     abi3 = True,
-    pointer_width = select({
-        "@platforms//cpu:aarch32": 32,
-        "@platforms//cpu:i386": 32,
-        "//conditions:default": 64,
-    }),
     shared = True,
 )
 

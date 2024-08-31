@@ -4,6 +4,9 @@
 
 Bazel rules for [PyO3](https://pyo3.rs/v0.22.2/).
 
+These rules use the hermetic toolchain infrastructure from [rules_python](https://github.com/bazelbuild/rules_python) to
+build PyO3 extension modules to be as reproducible as possible.
+
 ## Setup
 
 In order to use `rules_pyo3` it's recommended to first setup your `rules_rust`
@@ -40,6 +43,15 @@ load("@rules_pyo3//pyo3:repositories_transitive.bzl", "rules_pyo3_transitive_dep
 rules_pyo3_transitive_deps()
 ```
 
+### Toolchains
+
+Information about each toolchan can be seen below and in the rule's documentation.
+
+| rule | type | mandatory | details |
+| --- | --- | --- | --- |
+| [rust_pyo3_toolchain](#rust_pyo3_toolchain) | `@rules_pyo3//pyo3:rust_toolchain_type` | true | Required by the rules to determine what `pyo3` library to link. |
+| [pyo3_toolchain](#pyo3_toolchain) | `@rules_pyo3//pyo3:toolchain_type` | false | Used to help build `pyo3`. Users who are building `pyo3` in other ways do not need to set this. |
+
 ## Rules
 
 - [pyo3_extension](#pyo3_extension)
@@ -57,7 +69,27 @@ rules_pyo3_transitive_deps()
 pyo3_toolchain(<a href="#pyo3_toolchain-name">name</a>, <a href="#pyo3_toolchain-abi3">abi3</a>, <a href="#pyo3_toolchain-pointer_width">pointer_width</a>, <a href="#pyo3_toolchain-shared">shared</a>)
 </pre>
 
-Define a toolchain for building PyO3.
+Define a toolchain which generates config data for the [pyo3-build-config](https://pyo3.rs/v0.22.2/building-and-distribution/multiple-python-versions.html?highlight=pyo3-build-config#using-pyo3-build-config) crate.
+
+When using [rules_rust's crate_universe](https://bazelbuild.github.io/rules_rust/crate_universe.html), this data can be plubmed into the target using the following snippet.
+```starlark
+annotations = {
+    "pyo3-build-config": [
+        crate.annotation(
+            build_script_data = [
+                "@rules_pyo3//pyo3:current_pyo3_toolchain",
+            ],
+            build_script_env = {
+                "PYO3_CONFIG_FILE": "$${pwd}/$(PYO3_CONFIG_FILE)",
+                "PYO3_PYTHON": "$${pwd}/$(PYO3_PYTHON)",
+            },
+            build_script_toolchains = [
+                "@rules_pyo3//pyo3:current_pyo3_toolchain",
+            ],
+        ),
+    ],
+},
+```
 
 **ATTRIBUTES**
 
@@ -65,8 +97,8 @@ Define a toolchain for building PyO3.
 | Name  | Description | Type | Mandatory | Default |
 | :------------- | :------------- | :------------- | :------------- | :------------- |
 | <a id="pyo3_toolchain-name"></a>name |  A unique name for this target.   | <a href="https://bazel.build/concepts/labels#target-names">Name</a> | required |  |
-| <a id="pyo3_toolchain-abi3"></a>abi3 |  Whether linking against the stable/limited Python 3 API.   | Boolean | required |  |
-| <a id="pyo3_toolchain-pointer_width"></a>pointer_width |  Width in bits of pointers on the target machine.   | Integer | required |  |
+| <a id="pyo3_toolchain-abi3"></a>abi3 |  Whether linking against the stable/limited [Python 3 API](https://peps.python.org/pep-0384/). This value should match whether or not `pyo3` was built with the [abi3 feature](https://pyo3.rs/v0.22.2/features.html?highlight=abi3#abi3).   | Boolean | required |  |
+| <a id="pyo3_toolchain-pointer_width"></a>pointer_width |  Width in bits of pointers on the target machine. If unset the attributewill default to the detected value for the current configuration.   | Integer | optional |  `0`  |
 | <a id="pyo3_toolchain-shared"></a>shared |  Whether link library is shared.   | Boolean | required |  |
 
 
@@ -79,6 +111,8 @@ rust_pyo3_toolchain(<a href="#rust_pyo3_toolchain-name">name</a>, <a href="#rust
 </pre>
 
 Define a toolchain for PyO3 Rust dependencies which power internal rules.
+
+This toolchain is how the rules know which version of `pyo3` to link against.
 
 **ATTRIBUTES**
 

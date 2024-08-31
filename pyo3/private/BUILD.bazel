@@ -3,6 +3,7 @@ load(
     ":pyo3_toolchain.bzl",
     "current_pyo3_toolchain",
     "current_rust_pyo3_toolchain",
+    "pyo3_toolchain_defaults",
 )
 
 exports_files([
@@ -17,6 +18,16 @@ bzl_library(
         "@rules_python//python:defs_bzl",
         "@rules_rust//rust:bzl_lib",
     ],
+)
+
+pyo3_toolchain_defaults(
+    name = "pyo3_toolchain_defaults",
+    pointer_width = select({
+        "@platforms//cpu:aarch32": 32,
+        "@platforms//cpu:i386": 32,
+        "//conditions:default": 64,
+    }),
+    visibility = ["//visibility:public"],
 )
 
 current_pyo3_toolchain(
