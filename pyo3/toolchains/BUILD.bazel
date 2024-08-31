@@ -5,7 +5,6 @@ rust_library_group(
     name = "pyo3",
     deps = [
         "@rpyo3c//:pyo3",
-        "@rpyo3c//:pyo3-ffi",
     ],
 )
 
