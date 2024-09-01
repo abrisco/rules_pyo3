@@ -42,3 +42,9 @@ alias(
     actual = "@rpyo3c__pyo3-ffi-0.21.2//:pyo3_ffi",
     tags = ["manual"],
 )
+
+alias(
+    name = "pyo3-stub-gen",
+    actual = "@rpyo3c__pyo3-stub-gen-0.6.0//:pyo3_stub_gen",
+    tags = ["manual"],
+)

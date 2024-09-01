@@ -2,7 +2,7 @@
 
 load("@bazel_skylib//lib:paths.bzl", "paths")
 load("@rules_python//python:defs.bzl", "PyInfo")
-load("@rules_rust//rust:defs.bzl", "rust_common", "rust_shared_library")
+load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_common", "rust_shared_library")
 load(":pyo3_toolchain.bzl", "PYO3_TOOLCHAIN")
 
 def _get_imports(ctx, imports):
@@ -39,6 +39,8 @@ def _get_imports(ctx, imports):
     return depset(result)
 
 def _py_pyo3_library_impl(ctx):
+    toolchain = ctx.toolchains[PYO3_TOOLCHAIN]
+
     files = []
 
     extension = ctx.attr.extension[rust_common.test_crate_info].crate.output
@@ -54,6 +56,24 @@ def _py_pyo3_library_impl(ctx):
         target_file = extension,
     )
     files.append(ext)
+
+    if ctx.attr.stubs and toolchain.experimental_stubgen:
+        if not ctx.executable.stubgen:
+            fail("`stubs` was requested but no `stubgen` provided. Please update {}".format(
+                ctx.label,
+            ))
+
+        stub = ctx.actions.declare_file("{}.pyi".format(ctx.label.name))
+        args = ctx.actions.args()
+        args.add(stub)
+        ctx.actions.run(
+            mnemonic = "PyO3StubGen",
+            outputs = [stub],
+            inputs = [ext],
+            executable = ctx.executable.stubgen,
+            arguments = [args],
+        )
+        files.append(stub)
 
     return [
         DefaultInfo(
@@ -85,6 +105,15 @@ py_pyo3_library = rule(
         "imports": attr.string_list(
             doc = "List of import directories to be added to the `PYTHONPATH`.",
         ),
+        "stubgen": attr.label(
+            doc = "TODO",
+            cfg = "exec",
+            executable = True,
+        ),
+        "stubs": attr.bool(
+            doc = "TODO",
+            default = True,
+        ),
     },
     toolchains = [PYO3_TOOLCHAIN],
 )
@@ -104,6 +133,7 @@ def pyo3_extension(
         rustc_env = {},
         rustc_env_files = [],
         rustc_flags = [],
+        stubs = True,
         version = None,
         **kwargs):
     """Define a PyO3 python extension module.
@@ -141,39 +171,61 @@ def pyo3_extension(
             For more details see [rust_shared_library][rsl].
         rustc_flags (list, optional): List of compiler flags passed to `rustc`.
             For more details see [rust_shared_library][rsl].
+        stubs (bool, optional): Whether or not to generate stubs (`.pyi` file) for the module.
         version (str, optional): A version to inject in the cargo environment variable.
             For more details see [rust_shared_library][rsl].
         **kwargs (dict): Additional keyword arguments.
     """
     tags = kwargs.pop("tags", [])
     visibility = kwargs.pop("visibility", [])
-
-    rust_shared_library(
-        name = name + "_shared",
+    
+    lib_kwargs = dict(
         aliases = aliases,
         compile_data = compile_data,
         crate_features = crate_features,
         crate_name = kwargs.pop("crate_name", name),
-        crate_root = crate_root,
         data = data,
-        deps = [
-            Label("//pyo3/private:current_rust_pyo3_toolchain"),
-            Label("@rules_python//python/cc:current_py_cc_libs"),
-        ] + deps,
         edition = edition,
         proc_macro_deps = proc_macro_deps,
         rustc_env = rustc_env,
         rustc_env_files = rustc_env_files,
         rustc_flags = rustc_flags,
-        srcs = srcs,
         tags = depset(tags + ["manual"]).to_list(),
         version = version,
-        **kwargs
     )
+
+    rust_shared_library(
+        name = name + "_shared",
+        crate_root = crate_root,
+        srcs = srcs,
+        deps = [
+            Label("//pyo3/private:current_rust_pyo3_toolchain"),
+            Label("@rules_python//python/cc:current_py_cc_libs"),
+        ] + deps,
+        **lib_kwargs
+    )
+
+    stub_generator = None
+    if stubs:
+        stub_gen_root = Label("//pyo3/private:pyo3_stub_generator.rs")
+        stub_generator = name + "_stubgen"
+        rust_binary(
+            name = stub_generator,
+            crate_root = stub_gen_root,
+            srcs = [stub_gen_root] + srcs,
+            deps = [
+                Label("//pyo3/private:current_rust_pyo3_toolchain"),
+                Label("//pyo3/private:current_rust_pyo3_stub_gen_toolchain"),
+            ] + deps,
+            **lib_kwargs
+        )
+        
 
     py_pyo3_library(
         name = name,
         extension = name + "_shared",
+        stubgen = stub_generator,
+        stubs = stubs,
         imports = imports,
         tags = tags,
         visibility = visibility,

@@ -1,12 +1,15 @@
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
+load("@rules_rust//rust:defs.bzl", "rust_binary")
 load(
     ":pyo3_toolchain.bzl",
     "current_pyo3_toolchain",
+    "current_rust_pyo3_stub_gen_toolchain",
     "current_rust_pyo3_toolchain",
     "pyo3_toolchain_defaults",
 )
 
 exports_files([
+    "pyo3_stub_generator.rs",
     "pyo3_build_config.txt",
 ])
 
@@ -41,4 +44,21 @@ current_rust_pyo3_toolchain(
         "no-rustfmt",
     ],
     visibility = ["//visibility:public"],
+)
+
+current_rust_pyo3_stub_gen_toolchain(
+    name = "current_rust_pyo3_stub_gen_toolchain",
+    tags = [
+        "no-clippy",
+        "no-rustfmt",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+# Used mostly to ensure the generator builds
+rust_binary(
+    name = "pyo3_stub_generator",
+    srcs = ["pyo3_stub_generator.rs"],
+    edition = "2021",
+    deps = [":current_rust_pyo3_stub_gen_toolchain"],
 )

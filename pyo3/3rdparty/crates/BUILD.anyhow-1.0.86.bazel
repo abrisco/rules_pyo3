@@ -12,7 +12,7 @@ load("@rules_rust//rust:defs.bzl", "rust_library")
 package(default_visibility = ["//visibility:public"])
 
 rust_library(
-    name = "proc_macro2",
+    name = "anyhow",
     srcs = glob(
         include = ["**/*.rs"],
         allow_empty = True,
@@ -31,16 +31,16 @@ rust_library(
     ),
     crate_features = [
         "default",
-        "proc-macro",
+        "std",
     ],
     crate_root = "src/lib.rs",
-    edition = "2021",
+    edition = "2018",
     rustc_flags = [
         "--cap-lints=allow",
     ],
     tags = [
         "cargo-bazel",
-        "crate-name=proc-macro2",
+        "crate-name=anyhow",
         "manual",
         "noclippy",
         "norustfmt",
@@ -84,8 +84,7 @@ rust_library(
     }),
     version = "1.0.86",
     deps = [
-        "@rpyo3c__proc-macro2-1.0.86//:build_script_build",
-        "@rpyo3c__unicode-ident-1.0.12//:unicode_ident",
+        "@rpyo3c__anyhow-1.0.86//:build_script_build",
     ],
 )
 
@@ -97,7 +96,7 @@ cargo_build_script(
     ),
     crate_features = [
         "default",
-        "proc-macro",
+        "std",
     ],
     crate_name = "build_script_build",
     crate_root = "build.rs",
@@ -113,14 +112,14 @@ cargo_build_script(
             "WORKSPACE.bazel",
         ],
     ),
-    edition = "2021",
-    pkg_name = "proc-macro2",
+    edition = "2018",
+    pkg_name = "anyhow",
     rustc_flags = [
         "--cap-lints=allow",
     ],
     tags = [
         "cargo-bazel",
-        "crate-name=proc-macro2",
+        "crate-name=anyhow",
         "manual",
         "noclippy",
         "norustfmt",

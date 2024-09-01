@@ -12,7 +12,7 @@ load("@rules_rust//rust:defs.bzl", "rust_library")
 package(default_visibility = ["//visibility:public"])
 
 rust_library(
-    name = "proc_macro2",
+    name = "num_traits",
     srcs = glob(
         include = ["**/*.rs"],
         allow_empty = True,
@@ -31,7 +31,8 @@ rust_library(
     ),
     crate_features = [
         "default",
-        "proc-macro",
+        "i128",
+        "std",
     ],
     crate_root = "src/lib.rs",
     edition = "2021",
@@ -40,7 +41,7 @@ rust_library(
     ],
     tags = [
         "cargo-bazel",
-        "crate-name=proc-macro2",
+        "crate-name=num-traits",
         "manual",
         "noclippy",
         "norustfmt",
@@ -82,10 +83,9 @@ rust_library(
         "@rules_rust//rust/platform:x86_64-unknown-none": [],
         "//conditions:default": ["@platforms//:incompatible"],
     }),
-    version = "1.0.86",
+    version = "0.2.19",
     deps = [
-        "@rpyo3c__proc-macro2-1.0.86//:build_script_build",
-        "@rpyo3c__unicode-ident-1.0.12//:unicode_ident",
+        "@rpyo3c__num-traits-0.2.19//:build_script_build",
     ],
 )
 
@@ -97,7 +97,8 @@ cargo_build_script(
     ),
     crate_features = [
         "default",
-        "proc-macro",
+        "i128",
+        "std",
     ],
     crate_name = "build_script_build",
     crate_root = "build.rs",
@@ -114,19 +115,22 @@ cargo_build_script(
         ],
     ),
     edition = "2021",
-    pkg_name = "proc-macro2",
+    pkg_name = "num-traits",
     rustc_flags = [
         "--cap-lints=allow",
     ],
     tags = [
         "cargo-bazel",
-        "crate-name=proc-macro2",
+        "crate-name=num-traits",
         "manual",
         "noclippy",
         "norustfmt",
     ],
-    version = "1.0.86",
+    version = "0.2.19",
     visibility = ["//visibility:private"],
+    deps = [
+        "@rpyo3c__autocfg-1.3.0//:autocfg",
+    ],
 )
 
 alias(

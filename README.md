@@ -107,7 +107,7 @@ annotations = {
 ## rust_pyo3_toolchain
 
 <pre>
-rust_pyo3_toolchain(<a href="#rust_pyo3_toolchain-name">name</a>, <a href="#rust_pyo3_toolchain-pyo3">pyo3</a>)
+rust_pyo3_toolchain(<a href="#rust_pyo3_toolchain-name">name</a>, <a href="#rust_pyo3_toolchain-pyo3">pyo3</a>, <a href="#rust_pyo3_toolchain-pyo3_stub_gen">pyo3_stub_gen</a>)
 </pre>
 
 Define a toolchain for PyO3 Rust dependencies which power internal rules.
@@ -121,6 +121,7 @@ This toolchain is how the rules know which version of `pyo3` to link against.
 | :------------- | :------------- | :------------- | :------------- | :------------- |
 | <a id="rust_pyo3_toolchain-name"></a>name |  A unique name for this target.   | <a href="https://bazel.build/concepts/labels#target-names">Name</a> | required |  |
 | <a id="rust_pyo3_toolchain-pyo3"></a>pyo3 |  The PyO3 library.   | <a href="https://bazel.build/concepts/labels">Label</a> | required |  |
+| <a id="rust_pyo3_toolchain-pyo3_stub_gen"></a>pyo3_stub_gen |  The pyo3-stub-gen library.   | <a href="https://bazel.build/concepts/labels">Label</a> | optional |  `None`  |
 
 
 <a id="pyo3_extension"></a>
@@ -129,7 +130,8 @@ This toolchain is how the rules know which version of `pyo3` to link against.
 
 <pre>
 pyo3_extension(<a href="#pyo3_extension-name">name</a>, <a href="#pyo3_extension-srcs">srcs</a>, <a href="#pyo3_extension-aliases">aliases</a>, <a href="#pyo3_extension-compile_data">compile_data</a>, <a href="#pyo3_extension-crate_features">crate_features</a>, <a href="#pyo3_extension-crate_root">crate_root</a>, <a href="#pyo3_extension-data">data</a>, <a href="#pyo3_extension-deps">deps</a>, <a href="#pyo3_extension-edition">edition</a>,
-               <a href="#pyo3_extension-imports">imports</a>, <a href="#pyo3_extension-proc_macro_deps">proc_macro_deps</a>, <a href="#pyo3_extension-rustc_env">rustc_env</a>, <a href="#pyo3_extension-rustc_env_files">rustc_env_files</a>, <a href="#pyo3_extension-rustc_flags">rustc_flags</a>, <a href="#pyo3_extension-version">version</a>, <a href="#pyo3_extension-kwargs">kwargs</a>)
+               <a href="#pyo3_extension-imports">imports</a>, <a href="#pyo3_extension-proc_macro_deps">proc_macro_deps</a>, <a href="#pyo3_extension-rustc_env">rustc_env</a>, <a href="#pyo3_extension-rustc_env_files">rustc_env_files</a>, <a href="#pyo3_extension-rustc_flags">rustc_flags</a>, <a href="#pyo3_extension-stubs">stubs</a>, <a href="#pyo3_extension-version">version</a>,
+               <a href="#pyo3_extension-kwargs">kwargs</a>)
 </pre>
 
 Define a PyO3 python extension module.
@@ -159,6 +161,7 @@ This target is consumed just as a `py_library` would be.
 | <a id="pyo3_extension-rustc_env"></a>rustc_env |  Dictionary of additional `"key": "value"` environment variables to set for rustc. For more details see [rust_shared_library][rsl].   |  `{}` |
 | <a id="pyo3_extension-rustc_env_files"></a>rustc_env_files |  Files containing additional environment variables to set for rustc. For more details see [rust_shared_library][rsl].   |  `[]` |
 | <a id="pyo3_extension-rustc_flags"></a>rustc_flags |  List of compiler flags passed to `rustc`. For more details see [rust_shared_library][rsl].   |  `[]` |
+| <a id="pyo3_extension-stubs"></a>stubs |  Whether or not to generate stubs (`.pyi` file) for the module.   |  `True` |
 | <a id="pyo3_extension-version"></a>version |  A version to inject in the cargo environment variable. For more details see [rust_shared_library][rsl].   |  `None` |
 | <a id="pyo3_extension-kwargs"></a>kwargs |  Additional keyword arguments.   |  none |
 
