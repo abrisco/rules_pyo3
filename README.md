@@ -129,7 +129,8 @@ This toolchain is how the rules know which version of `pyo3` to link against.
 
 <pre>
 pyo3_extension(<a href="#pyo3_extension-name">name</a>, <a href="#pyo3_extension-srcs">srcs</a>, <a href="#pyo3_extension-aliases">aliases</a>, <a href="#pyo3_extension-compile_data">compile_data</a>, <a href="#pyo3_extension-crate_features">crate_features</a>, <a href="#pyo3_extension-crate_root">crate_root</a>, <a href="#pyo3_extension-data">data</a>, <a href="#pyo3_extension-deps">deps</a>, <a href="#pyo3_extension-edition">edition</a>,
-               <a href="#pyo3_extension-imports">imports</a>, <a href="#pyo3_extension-proc_macro_deps">proc_macro_deps</a>, <a href="#pyo3_extension-rustc_env">rustc_env</a>, <a href="#pyo3_extension-rustc_env_files">rustc_env_files</a>, <a href="#pyo3_extension-rustc_flags">rustc_flags</a>, <a href="#pyo3_extension-version">version</a>, <a href="#pyo3_extension-kwargs">kwargs</a>)
+               <a href="#pyo3_extension-imports">imports</a>, <a href="#pyo3_extension-proc_macro_deps">proc_macro_deps</a>, <a href="#pyo3_extension-rustc_env">rustc_env</a>, <a href="#pyo3_extension-rustc_env_files">rustc_env_files</a>, <a href="#pyo3_extension-rustc_flags">rustc_flags</a>, <a href="#pyo3_extension-version">version</a>,
+               <a href="#pyo3_extension-compilation_mode">compilation_mode</a>, <a href="#pyo3_extension-kwargs">kwargs</a>)
 </pre>
 
 Define a PyO3 python extension module.
@@ -160,6 +161,7 @@ This target is consumed just as a `py_library` would be.
 | <a id="pyo3_extension-rustc_env_files"></a>rustc_env_files |  Files containing additional environment variables to set for rustc. For more details see [rust_shared_library][rsl].   |  `[]` |
 | <a id="pyo3_extension-rustc_flags"></a>rustc_flags |  List of compiler flags passed to `rustc`. For more details see [rust_shared_library][rsl].   |  `[]` |
 | <a id="pyo3_extension-version"></a>version |  A version to inject in the cargo environment variable. For more details see [rust_shared_library][rsl].   |  `None` |
+| <a id="pyo3_extension-compilation_mode"></a>compilation_mode |  The [compilation_mode](https://bazel.build/reference/command-line-reference#flag--compilation_mode) value to build the extension for. If set to `"current"`, the current configuration will be used.   |  `"opt"` |
 | <a id="pyo3_extension-kwargs"></a>kwargs |  Additional keyword arguments.   |  none |
 
 
