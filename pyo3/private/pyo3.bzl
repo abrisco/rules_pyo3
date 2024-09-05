@@ -5,6 +5,18 @@ load("@rules_python//python:defs.bzl", "PyInfo")
 load("@rules_rust//rust:defs.bzl", "rust_common", "rust_shared_library")
 load(":pyo3_toolchain.bzl", "PYO3_TOOLCHAIN")
 
+def _compilation_mode_transition_impl(settings, attr):
+    output = dict(settings)
+    if attr.compilation_mode in ["dbg", "fastbuild", "opt"]:
+        output["//command_line_option:compilation_mode"] = attr.compilation_mode
+    return output
+
+_compilation_mode_transition = transition(
+    implementation = _compilation_mode_transition_impl,
+    inputs = ["//command_line_option:compilation_mode"],
+    outputs = ["//command_line_option:compilation_mode"],
+)
+
 def _get_imports(ctx, imports):
     """Determine the import paths from a target's `imports` attribute.
 
@@ -73,7 +85,21 @@ def _py_pyo3_library_impl(ctx):
 py_pyo3_library = rule(
     doc = "Define a Python library for a PyO3 extension.",
     implementation = _py_pyo3_library_impl,
+    cfg = _compilation_mode_transition,
     attrs = {
+        "compilation_mode": attr.string(
+            doc = (
+                "Specify the mode `extension` will be built in. For details see " +
+                " [`--compilation_mode`](https://bazel.build/reference/command-line-reference#flag--compilation_mode)"
+            ),
+            values = [
+                "dbg",
+                "fastbuild",
+                "opt",
+                "current",
+            ],
+            default = "opt",
+        ),
         "extension": attr.label(
             doc = "The PyO3 library.",
             cfg = "target",
@@ -105,6 +131,7 @@ def pyo3_extension(
         rustc_env_files = [],
         rustc_flags = [],
         version = None,
+        compilation_mode = "opt",
         **kwargs):
     """Define a PyO3 python extension module.
 
@@ -143,6 +170,8 @@ def pyo3_extension(
             For more details see [rust_shared_library][rsl].
         version (str, optional): A version to inject in the cargo environment variable.
             For more details see [rust_shared_library][rsl].
+        compilation_mode (str, optional): The [compilation_mode](https://bazel.build/reference/command-line-reference#flag--compilation_mode)
+            value to build the extension for. If set to `"current"`, the current configuration will be used.
         **kwargs (dict): Additional keyword arguments.
     """
     tags = kwargs.pop("tags", [])
@@ -174,6 +203,7 @@ def pyo3_extension(
     py_pyo3_library(
         name = name,
         extension = name + "_shared",
+        compilation_mode = compilation_mode,
         imports = imports,
         tags = tags,
         visibility = visibility,
