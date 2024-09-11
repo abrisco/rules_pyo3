@@ -23,8 +23,16 @@ bzl_library(
 pyo3_toolchain_defaults(
     name = "pyo3_toolchain_defaults",
     pointer_width = select({
+        "@@platforms//cpu:riscv32": 32,
         "@platforms//cpu:aarch32": 32,
+        "@platforms//cpu:armv7": 32,
+        "@platforms//cpu:armv7-m": 32,
+        "@platforms//cpu:armv7e-m": 32,
+        "@platforms//cpu:armv7e-mf": 32,
+        "@platforms//cpu:armv7k": 32,
         "@platforms//cpu:i386": 32,
+        "@platforms//cpu:ppc32": 32,
+        "@platforms//cpu:wasm32": 32,
         "//conditions:default": 64,
     }),
     visibility = ["//visibility:public"],
