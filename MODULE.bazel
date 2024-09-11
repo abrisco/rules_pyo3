@@ -2,7 +2,7 @@
 
 module(
     name = "rules_pyo3",
-    version = "0.0.2",
+    version = "0.0.3",
 )
 
 bazel_dep(name = "rules_rust", version = "0.50.0")
