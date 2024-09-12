@@ -66,10 +66,15 @@ Information about each toolchan can be seen below and in the rule's documentatio
 ## pyo3_toolchain
 
 <pre>
-pyo3_toolchain(<a href="#pyo3_toolchain-name">name</a>, <a href="#pyo3_toolchain-abi3">abi3</a>, <a href="#pyo3_toolchain-pointer_width">pointer_width</a>, <a href="#pyo3_toolchain-shared">shared</a>)
+pyo3_toolchain(<a href="#pyo3_toolchain-name">name</a>)
 </pre>
 
-Define a toolchain which generates config data for the [pyo3-build-config](https://pyo3.rs/v0.22.2/building-and-distribution/multiple-python-versions.html?highlight=pyo3-build-config#using-pyo3-build-config) crate.
+Define a toolchain which generates config data for the PyO3 for producing extension modules on any target platform.
+
+Note that this toolchain expects the `pyo3` crate to be built with the following features:
+- [`abi3`](https://pyo3.rs/v0.22.2/features.html?highlight=abi3#abi3)
+- [`abi3-py3*`](https://pyo3.rs/v0.22.2/features.html?highlight=abi3#the-abi3-pyxy-features) (e.g `abi3-py311`)
+- [`extension-module`](https://pyo3.rs/v0.22.2/features.html?highlight=abi3#extension-module)
 
 When using [rules_rust's crate_universe](https://bazelbuild.github.io/rules_rust/crate_universe.html), this data can be plubmed into the target using the following snippet.
 ```starlark
@@ -80,8 +85,30 @@ annotations = {
                 "@rules_pyo3//pyo3:current_pyo3_toolchain",
             ],
             build_script_env = {
-                "PYO3_CONFIG_FILE": "$${pwd}/$(PYO3_CONFIG_FILE)",
-                "PYO3_PYTHON": "$${pwd}/$(PYO3_PYTHON)",
+                "PYO3_CROSS": "$(PYO3_CROSS)",
+                "PYO3_CROSS_LIB_DIR": "$(PYO3_CROSS_LIB_DIR)",
+                "PYO3_CROSS_PYTHON_IMPLEMENTATION": "$(PYO3_CROSS_PYTHON_IMPLEMENTATION)",
+                "PYO3_CROSS_PYTHON_VERSION": "$(PYO3_CROSS_PYTHON_VERSION)",
+                "PYO3_NO_PYTHON": "$(PYO3_NO_PYTHON)",
+                "PYO3_PYTHON": "$(PYO3_PYTHON)",
+            },
+            build_script_toolchains = [
+                "@rules_pyo3//pyo3:current_pyo3_toolchain",
+            ],
+        ),
+    ],
+    "pyo3-ffi": [
+        crate.annotation(
+            build_script_data = [
+                "@rules_pyo3//pyo3:current_pyo3_toolchain",
+            ],
+            build_script_env = {
+                "PYO3_CROSS": "$(PYO3_CROSS)",
+                "PYO3_CROSS_LIB_DIR": "$(PYO3_CROSS_LIB_DIR)",
+                "PYO3_CROSS_PYTHON_IMPLEMENTATION": "$(PYO3_CROSS_PYTHON_IMPLEMENTATION)",
+                "PYO3_CROSS_PYTHON_VERSION": "$(PYO3_CROSS_PYTHON_VERSION)",
+                "PYO3_NO_PYTHON": "$(PYO3_NO_PYTHON)",
+                "PYO3_PYTHON": "$(PYO3_PYTHON)",
             },
             build_script_toolchains = [
                 "@rules_pyo3//pyo3:current_pyo3_toolchain",
@@ -97,9 +124,6 @@ annotations = {
 | Name  | Description | Type | Mandatory | Default |
 | :------------- | :------------- | :------------- | :------------- | :------------- |
 | <a id="pyo3_toolchain-name"></a>name |  A unique name for this target.   | <a href="https://bazel.build/concepts/labels#target-names">Name</a> | required |  |
-| <a id="pyo3_toolchain-abi3"></a>abi3 |  Whether linking against the stable/limited [Python 3 API](https://peps.python.org/pep-0384/). This value should match whether or not `pyo3` was built with the [abi3 feature](https://pyo3.rs/v0.22.2/features.html?highlight=abi3#abi3).   | Boolean | required |  |
-| <a id="pyo3_toolchain-pointer_width"></a>pointer_width |  Width in bits of pointers on the target machine. If unset the attributewill default to the detected value for the current configuration.   | Integer | optional |  `0`  |
-| <a id="pyo3_toolchain-shared"></a>shared |  Whether link library is shared.   | Boolean | required |  |
 
 
 <a id="rust_pyo3_toolchain"></a>

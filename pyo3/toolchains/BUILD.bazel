@@ -21,8 +21,6 @@ toolchain(
 
 pyo3_toolchain(
     name = "pyo3_toolchain",
-    abi3 = True,
-    shared = True,
 )
 
 toolchain(

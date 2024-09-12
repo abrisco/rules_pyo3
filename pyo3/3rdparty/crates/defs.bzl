@@ -557,6 +557,12 @@ def crate_repositories():
     maybe(
         http_archive,
         name = "rpyo3c__pyo3-build-config-0.21.2",
+        patch_args = [
+            "-p1",
+        ],
+        patches = [
+            "@rules_pyo3//pyo3/3rdparty/patches:resolve_cross_compile_config_path.patch",
+        ],
         sha256 = "7883df5835fafdad87c0d888b266c8ec0f4c9ca48a5bed6bbb592e8dedee1b50",
         type = "tar.gz",
         urls = ["https://static.crates.io/crates/pyo3-build-config/0.21.2/download"],
