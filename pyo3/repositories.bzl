@@ -9,8 +9,8 @@ def rules_pyo3_dependencies():
     maybe(
         http_archive,
         name = "rules_rust",
-        integrity = "sha256-NE2PXqlFFVnUDR4msCyI3kZtv1y1Io2MCsrlVxsdqI4=",
-        urls = ["https://github.com/bazelbuild/rules_rust/releases/download/0.50.0/rules_rust-v0.50.0.tar.gz"],
+        integrity = "sha256-MZscNcESBO9WsdlKVJ9rnTUygTt3jwLXCe9oyDcDbPE=",
+        urls = ["https://github.com/bazelbuild/rules_rust/releases/download/0.50.1/rules_rust-v0.50.1.tar.gz"],
     )
 
     maybe(

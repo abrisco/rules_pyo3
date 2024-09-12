@@ -108,6 +108,18 @@ cargo_build_script(
         "PYO3_NO_PYTHON": "$(PYO3_NO_PYTHON)",
         "PYO3_PYTHON": "$(PYO3_PYTHON)",
     },
+    compile_data = glob(
+        include = ["**"],
+        allow_empty = True,
+        exclude = [
+            "**/* *",
+            ".tmp_git_root/**/*",
+            "BUILD",
+            "BUILD.bazel",
+            "WORKSPACE",
+            "WORKSPACE.bazel",
+        ],
+    ),
     crate_features = [
         "abi3",
         "abi3-py311",

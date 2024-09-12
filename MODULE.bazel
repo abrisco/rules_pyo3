@@ -2,9 +2,9 @@
 
 module(
     name = "rules_pyo3",
-    version = "0.0.3",
+    version = "0.0.4",
 )
 
-bazel_dep(name = "rules_rust", version = "0.50.0")
+bazel_dep(name = "rules_rust", version = "0.50.1")
 bazel_dep(name = "rules_python", version = "0.34.0")
 bazel_dep(name = "bazel_skylib", version = "1.6.1")
