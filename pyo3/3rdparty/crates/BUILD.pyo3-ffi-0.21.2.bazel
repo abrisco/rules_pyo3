@@ -31,6 +31,8 @@ rust_library(
     ),
     crate_features = [
         "abi3",
+        "abi3-py311",
+        "abi3-py312",
         "default",
         "extension-module",
     ],
@@ -96,8 +98,18 @@ cargo_build_script(
         include = ["**/*.rs"],
         allow_empty = True,
     ),
+    build_script_env = {
+        "PYO3_CROSS": "$(PYO3_CROSS)",
+        "PYO3_CROSS_LIB_DIR": "$(PYO3_CROSS_LIB_DIR)",
+        "PYO3_CROSS_PYTHON_IMPLEMENTATION": "$(PYO3_CROSS_PYTHON_IMPLEMENTATION)",
+        "PYO3_CROSS_PYTHON_VERSION": "$(PYO3_CROSS_PYTHON_VERSION)",
+        "PYO3_NO_PYTHON": "$(PYO3_NO_PYTHON)",
+        "PYO3_PYTHON": "$(PYO3_PYTHON)",
+    },
     crate_features = [
         "abi3",
+        "abi3-py311",
+        "abi3-py312",
         "default",
         "extension-module",
     ],
@@ -114,7 +126,9 @@ cargo_build_script(
             "WORKSPACE",
             "WORKSPACE.bazel",
         ],
-    ),
+    ) + [
+        "@rules_pyo3//pyo3:current_pyo3_toolchain",
+    ],
     edition = "2021",
     links = "python",
     pkg_name = "pyo3-ffi",
@@ -128,6 +142,7 @@ cargo_build_script(
         "noclippy",
         "norustfmt",
     ],
+    toolchains = ["@rules_pyo3//pyo3:current_pyo3_toolchain"],
     version = "0.21.2",
     visibility = ["//visibility:private"],
     deps = [

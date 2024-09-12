@@ -31,6 +31,8 @@ rust_library(
     ),
     crate_features = [
         "abi3",
+        "abi3-py311",
+        "abi3-py312",
         "default",
         "extension-module",
         "resolve-config",
@@ -99,11 +101,17 @@ cargo_build_script(
         allow_empty = True,
     ),
     build_script_env = {
-        "PYO3_CONFIG_FILE": "$${pwd}/$(PYO3_CONFIG_FILE)",
-        "PYO3_PYTHON": "$${pwd}/$(PYO3_PYTHON)",
+        "PYO3_CROSS": "$(PYO3_CROSS)",
+        "PYO3_CROSS_LIB_DIR": "$(PYO3_CROSS_LIB_DIR)",
+        "PYO3_CROSS_PYTHON_IMPLEMENTATION": "$(PYO3_CROSS_PYTHON_IMPLEMENTATION)",
+        "PYO3_CROSS_PYTHON_VERSION": "$(PYO3_CROSS_PYTHON_VERSION)",
+        "PYO3_NO_PYTHON": "$(PYO3_NO_PYTHON)",
+        "PYO3_PYTHON": "$(PYO3_PYTHON)",
     },
     crate_features = [
         "abi3",
+        "abi3-py311",
+        "abi3-py312",
         "default",
         "extension-module",
         "resolve-config",

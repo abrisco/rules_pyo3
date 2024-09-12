@@ -38,7 +38,8 @@ def _pyo3_toolchain_impl(ctx):
             if library.static_library:
                 libs.append(library.static_library)
 
-    # Shared is determined by whether or not any shared librares were detected in the `py_cc_toolchain`.
+    implementation = PY_IMPLEMENTATIONS[py_runtime.implementation_name.lower()]
+
     shared_exts = (".dll", ".so", ".dylib")
 
     root_lib = None
@@ -47,62 +48,40 @@ def _pyo3_toolchain_impl(ctx):
             root_lib = lib
             continue
 
-        if ctx.attr.shared:
-            if lib.basename.endswith(shared_exts) and not root_lib.basename.endswith(shared_exts):
-                root_lib = lib
-        elif not lib.basename.endswith(shared_exts) and root_lib.basename.endswith(shared_exts):
+        if lib.basename.endswith(shared_exts) and not root_lib.basename.endswith(shared_exts):
             root_lib = lib
 
-    lib_dir = root_lib.dirname
-    if root_lib.basename.endswith((".lib", ".dll")):
-        lib_name, _, _ = root_lib.basename.rpartition(".")
-    else:
-        lib_name = "python{}".format(version)
+    if not root_lib:
+        fail("Failed to find python libraries for linking in '{}'".format(ctx.label))
 
-    implementation = PY_IMPLEMENTATIONS[py_runtime.implementation_name.lower()]
-
-    defaults = ctx.attr._defaults[platform_common.ToolchainInfo]
-
-    pointer_width = defaults.pointer_width
-    if ctx.attr.pointer_width:
-        pointer_width = ctx.attr.pointer_width
-
-    pyo3_config_file = ctx.actions.declare_file("{}/pyo3-build-config.txt".format(ctx.label.name))
-    ctx.actions.expand_template(
-        template = ctx.file._build_config_template,
-        output = pyo3_config_file,
-        substitutions = {
-            "{ABI3}": str(ctx.attr.abi3).lower(),
-            "{EXECUTABLE}": interpreter,
-            "{IMPLEMENTATION}": implementation,
-            "{LIB_DIR}": lib_dir,
-            "{LIB_NAME}": lib_name,
-            "{POINTER_WIDTH}": str(pointer_width),
-            "{SHARED}": str(ctx.attr.shared).lower(),
-            "{VERSION}": version,
-        },
-    )
-
+    # This set of environment variables is required for correctly building extension
+    # modules for any target platform.
     make_variable_info = platform_common.TemplateVariableInfo({
-        "PYO3_CONFIG_FILE": pyo3_config_file.path,
-        "PYO3_PYTHON": interpreter,
+        "PYO3_CROSS": "1",
+        "PYO3_CROSS_LIB_DIR": "$${pwd}/" + root_lib.dirname,
+        "PYO3_CROSS_PYTHON_IMPLEMENTATION": implementation,
+        "PYO3_CROSS_PYTHON_VERSION": version,
+        "PYO3_NO_PYTHON": "1",
+        "PYO3_PYTHON": "$${pwd}/" + interpreter,
     })
 
     return [
         platform_common.ToolchainInfo(
-            pyo3_config_file = pyo3_config_file,
             make_variable_info = make_variable_info,
             python_libs = depset(libs),
         ),
         make_variable_info,
-        DefaultInfo(
-            files = depset([pyo3_config_file]),
-        ),
+        DefaultInfo(files = depset()),
     ]
 
 pyo3_toolchain = rule(
     doc = """\
-Define a toolchain which generates config data for the [pyo3-build-config](https://pyo3.rs/v0.22.2/building-and-distribution/multiple-python-versions.html?highlight=pyo3-build-config#using-pyo3-build-config) crate.
+Define a toolchain which generates config data for the PyO3 for producing extension modules on any target platform.
+
+Note that this toolchain expects the `pyo3` crate to be built with the following features:
+- [`abi3`](https://pyo3.rs/v0.22.2/features.html?highlight=abi3#abi3)
+- [`abi3-py3*`](https://pyo3.rs/v0.22.2/features.html?highlight=abi3#the-abi3-pyxy-features) (e.g `abi3-py311`)
+- [`extension-module`](https://pyo3.rs/v0.22.2/features.html?highlight=abi3#extension-module)
 
 When using [rules_rust's crate_universe](https://bazelbuild.github.io/rules_rust/crate_universe.html), this data can be plubmed into the target using the following snippet.
 ```starlark
@@ -113,8 +92,30 @@ annotations = {
                 "@rules_pyo3//pyo3:current_pyo3_toolchain",
             ],
             build_script_env = {
-                "PYO3_CONFIG_FILE": "$${pwd}/$(PYO3_CONFIG_FILE)",
-                "PYO3_PYTHON": "$${pwd}/$(PYO3_PYTHON)",
+                "PYO3_CROSS": "$(PYO3_CROSS)",
+                "PYO3_CROSS_LIB_DIR": "$(PYO3_CROSS_LIB_DIR)",
+                "PYO3_CROSS_PYTHON_IMPLEMENTATION": "$(PYO3_CROSS_PYTHON_IMPLEMENTATION)",
+                "PYO3_CROSS_PYTHON_VERSION": "$(PYO3_CROSS_PYTHON_VERSION)",
+                "PYO3_NO_PYTHON": "$(PYO3_NO_PYTHON)",
+                "PYO3_PYTHON": "$(PYO3_PYTHON)",
+            },
+            build_script_toolchains = [
+                "@rules_pyo3//pyo3:current_pyo3_toolchain",
+            ],
+        ),
+    ],
+    "pyo3-ffi": [
+        crate.annotation(
+            build_script_data = [
+                "@rules_pyo3//pyo3:current_pyo3_toolchain",
+            ],
+            build_script_env = {
+                "PYO3_CROSS": "$(PYO3_CROSS)",
+                "PYO3_CROSS_LIB_DIR": "$(PYO3_CROSS_LIB_DIR)",
+                "PYO3_CROSS_PYTHON_IMPLEMENTATION": "$(PYO3_CROSS_PYTHON_IMPLEMENTATION)",
+                "PYO3_CROSS_PYTHON_VERSION": "$(PYO3_CROSS_PYTHON_VERSION)",
+                "PYO3_NO_PYTHON": "$(PYO3_NO_PYTHON)",
+                "PYO3_PYTHON": "$(PYO3_PYTHON)",
             },
             build_script_toolchains = [
                 "@rules_pyo3//pyo3:current_pyo3_toolchain",
@@ -125,55 +126,11 @@ annotations = {
 ```
 """,
     implementation = _pyo3_toolchain_impl,
-    attrs = {
-        "abi3": attr.bool(
-            doc = (
-                "Whether linking against the stable/limited [Python 3 API](https://peps.python.org/pep-0384/). " +
-                "This value should match whether or not `pyo3` was built with the " +
-                "[abi3 feature](https://pyo3.rs/v0.22.2/features.html?highlight=abi3#abi3)."
-            ),
-            mandatory = True,
-        ),
-        "pointer_width": attr.int(
-            doc = (
-                "Width in bits of pointers on the target machine. If unset the attribute" +
-                "will default to the detected value for the current configuration."
-            ),
-            values = [32, 64],
-        ),
-        "shared": attr.bool(
-            doc = "Whether link library is shared.",
-            mandatory = True,
-        ),
-        "_build_config_template": attr.label(
-            allow_single_file = True,
-            default = Label("//pyo3/private:pyo3_build_config.txt"),
-        ),
-        "_defaults": attr.label(
-            default = Label("//pyo3/private:pyo3_toolchain_defaults"),
-        ),
-    },
+    attrs = {},
     toolchains = [
         "@rules_python//python/cc:toolchain_type",
         "@rules_python//python:toolchain_type",
     ],
-)
-
-def _pyo3_toolchain_defaults_impl(ctx):
-    return [platform_common.ToolchainInfo(
-        pointer_width = ctx.attr.pointer_width,
-    )]
-
-pyo3_toolchain_defaults = rule(
-    doc = "A rule for specifying default values for `pyo3_toolchain` based on the current configuration.",
-    implementation = _pyo3_toolchain_defaults_impl,
-    attrs = {
-        "pointer_width": attr.int(
-            doc = "See `pyo3_toolchain.pointer_width`.",
-            values = [32, 64],
-            mandatory = True,
-        ),
-    },
 )
 
 def _current_pyo3_toolchain_impl(ctx):
@@ -181,7 +138,7 @@ def _current_pyo3_toolchain_impl(ctx):
     return [
         toolchain.make_variable_info,
         DefaultInfo(
-            files = depset([toolchain.pyo3_config_file], transitive = [toolchain.python_libs]),
+            files = depset(transitive = [toolchain.python_libs]),
         ),
     ]
 

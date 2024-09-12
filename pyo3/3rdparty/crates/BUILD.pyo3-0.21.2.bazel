@@ -31,6 +31,8 @@ rust_library(
     ),
     crate_features = [
         "abi3",
+        "abi3-py311",
+        "abi3-py312",
         "default",
         "extension-module",
         "indoc",
@@ -112,6 +114,8 @@ cargo_build_script(
     ),
     crate_features = [
         "abi3",
+        "abi3-py311",
+        "abi3-py312",
         "default",
         "extension-module",
         "indoc",

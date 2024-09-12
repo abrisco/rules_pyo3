@@ -10,8 +10,32 @@ crates_vendor(
                     "@rules_pyo3//pyo3:current_pyo3_toolchain",
                 ],
                 build_script_env = {
-                    "PYO3_CONFIG_FILE": "$${pwd}/$(PYO3_CONFIG_FILE)",
-                    "PYO3_PYTHON": "$${pwd}/$(PYO3_PYTHON)",
+                    "PYO3_CROSS": "$(PYO3_CROSS)",
+                    "PYO3_CROSS_LIB_DIR": "$(PYO3_CROSS_LIB_DIR)",
+                    "PYO3_CROSS_PYTHON_IMPLEMENTATION": "$(PYO3_CROSS_PYTHON_IMPLEMENTATION)",
+                    "PYO3_CROSS_PYTHON_VERSION": "$(PYO3_CROSS_PYTHON_VERSION)",
+                    "PYO3_NO_PYTHON": "$(PYO3_NO_PYTHON)",
+                    "PYO3_PYTHON": "$(PYO3_PYTHON)",
+                },
+                build_script_toolchains = [
+                    "@rules_pyo3//pyo3:current_pyo3_toolchain",
+                ],
+                patch_args = ["-p1"],
+                patches = ["@rules_pyo3//pyo3/3rdparty/patches:resolve_cross_compile_config_path.patch"],
+            ),
+        ],
+        "pyo3-ffi": [
+            crate.annotation(
+                build_script_data = [
+                    "@rules_pyo3//pyo3:current_pyo3_toolchain",
+                ],
+                build_script_env = {
+                    "PYO3_CROSS": "$(PYO3_CROSS)",
+                    "PYO3_CROSS_LIB_DIR": "$(PYO3_CROSS_LIB_DIR)",
+                    "PYO3_CROSS_PYTHON_IMPLEMENTATION": "$(PYO3_CROSS_PYTHON_IMPLEMENTATION)",
+                    "PYO3_CROSS_PYTHON_VERSION": "$(PYO3_CROSS_PYTHON_VERSION)",
+                    "PYO3_NO_PYTHON": "$(PYO3_NO_PYTHON)",
+                    "PYO3_PYTHON": "$(PYO3_PYTHON)",
                 },
                 build_script_toolchains = [
                     "@rules_pyo3//pyo3:current_pyo3_toolchain",
@@ -25,6 +49,7 @@ crates_vendor(
         "pyo3": crate.spec(
             features = [
                 "abi3",
+                "abi3-py311",
                 "extension-module",
             ],
             version = "0.21.0",
