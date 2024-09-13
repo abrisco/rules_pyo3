@@ -175,7 +175,7 @@ def pyo3_extension(
         **kwargs (dict): Additional keyword arguments.
     """
     tags = kwargs.pop("tags", [])
-    visibility = kwargs.pop("visibility", [])
+    visibility = kwargs.pop("visibility", None)
 
     rust_shared_library(
         name = name + "_shared",
