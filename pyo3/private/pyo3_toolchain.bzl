@@ -40,7 +40,7 @@ def _pyo3_toolchain_impl(ctx):
 
     implementation = PY_IMPLEMENTATIONS[py_runtime.implementation_name.lower()]
 
-    shared_exts = (".dll", ".so", ".dylib")
+    preferred_lib_exts = (".dylib", ".so", ".lib")
 
     root_lib = None
     for lib in libs:
@@ -48,7 +48,7 @@ def _pyo3_toolchain_impl(ctx):
             root_lib = lib
             continue
 
-        if lib.basename.endswith(shared_exts) and not root_lib.basename.endswith(shared_exts):
+        if lib.basename.endswith(preferred_lib_exts) and not root_lib.basename.endswith(preferred_lib_exts):
             root_lib = lib
 
     if not root_lib:
