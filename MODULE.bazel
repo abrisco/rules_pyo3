@@ -5,6 +5,39 @@ module(
     version = "0.0.6",
 )
 
-bazel_dep(name = "rules_rust", version = "0.50.1")
-bazel_dep(name = "rules_python", version = "0.34.0")
-bazel_dep(name = "bazel_skylib", version = "1.6.1")
+bazel_dep(
+    name = "rules_rust",
+    version = "0.56.0",
+)
+bazel_dep(
+    name = "rules_python",
+    version = "1.0.0",
+)
+bazel_dep(
+    name = "bazel_skylib",
+    version = "1.7.1",
+)
+bazel_dep(
+    name = "platforms",
+    version = "0.0.10",
+)
+
+rust_ext = use_extension("//pyo3:extensions.bzl", "rust_ext")
+use_repo(
+    rust_ext,
+    "rpyo3c",
+    "rpyo3c__pyo3-0.21.2",
+    "rpyo3c__pyo3-ffi-0.21.2",
+)
+
+register_toolchains(
+    "@//pyo3/toolchains:toolchain",
+    "@//pyo3/toolchains:rust_toolchain",
+)
+
+bazel_dep(
+    name = "stardoc",
+    version = "0.7.2",
+    dev_dependency = True,
+    repo_name = "io_bazel_stardoc",
+)

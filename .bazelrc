@@ -30,10 +30,10 @@ build --sandbox_default_allow_network=false
 # registered in the WORKSPACE.
 common --repo_env=BAZEL_DO_NOT_DETECT_PYTHON_TOOLCHAIN=1
 
-# Enable rustfmt for all targets in the workspace
-build --aspects=@rules_rust//rust:defs.bzl%rustfmt_aspect
-build:rustfmt --output_groups=+rustfmt_checks
-build:no_rustfmt --output_groups=-rustfmt_checks
+# # Enable rustfmt for all targets in the workspace
+# build --aspects=@rules_rust//rust:defs.bzl%rustfmt_aspect
+# build:rustfmt --output_groups=+rustfmt_checks
+# build:no_rustfmt --output_groups=-rustfmt_checks
 
 # Enable clippy for all targets in the workspace
 build --aspects=@rules_rust//rust:defs.bzl%rust_clippy_aspect
@@ -49,9 +49,9 @@ build:unpretty --output_groups=+rust_unpretty
 build:unpretty --config=nightly
 
 # Convenience configs for enabling linting and formatting
-build:strict --config=rustfmt
+# build:strict --config=rustfmt
 build:strict --config=clippy
-build:no_strict --config=no_rustfmt
+# build:no_strict --config=no_rustfmt
 build:no_strict --config=no_clippy
 
 # When running test enable all linters and formatters
@@ -78,8 +78,8 @@ build --incompatible_default_to_explicit_init_py
 ## Bzlmod
 ###############################################################################
 
-# TODO: migrate all dependencies from WORKSPACE to MODULE.bazel
-common --noenable_bzlmod
+# A configuration for disabling bzlmod.
+common:no-bzlmod --noenable_bzlmod --enable_workspace
 
 # Disable the bzlmod lockfile, so we don't accidentally commit MODULE.bazel.lock
 common --lockfile_mode=off

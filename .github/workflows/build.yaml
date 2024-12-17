@@ -64,7 +64,6 @@ jobs:
         if: startswith(runner.os, 'Windows')
       - name: Setup Bazelrc
         run: |
-          echo "common --noenable_bzlmod" >> ./user.bazelrc
           echo "common --keep_going" >> ./user.bazelrc
 
       # Build and Test the code
@@ -108,4 +107,3 @@ jobs:
       - name: Run isort
         run: |
           python -m isort --check-only pyo3
-

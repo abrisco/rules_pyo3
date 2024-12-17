@@ -66,6 +66,8 @@ Information about each toolchan can be seen below and in the rule's documentatio
 ## pyo3_toolchain
 
 <pre>
+load("@rules_pyo3//pyo3:defs.bzl", "pyo3_toolchain")
+
 pyo3_toolchain(<a href="#pyo3_toolchain-name">name</a>)
 </pre>
 
@@ -131,6 +133,8 @@ annotations = {
 ## rust_pyo3_toolchain
 
 <pre>
+load("@rules_pyo3//pyo3:defs.bzl", "rust_pyo3_toolchain")
+
 rust_pyo3_toolchain(<a href="#rust_pyo3_toolchain-name">name</a>, <a href="#rust_pyo3_toolchain-pyo3">pyo3</a>)
 </pre>
 
@@ -152,9 +156,11 @@ This toolchain is how the rules know which version of `pyo3` to link against.
 ## pyo3_extension
 
 <pre>
+load("@rules_pyo3//pyo3:defs.bzl", "pyo3_extension")
+
 pyo3_extension(<a href="#pyo3_extension-name">name</a>, <a href="#pyo3_extension-srcs">srcs</a>, <a href="#pyo3_extension-aliases">aliases</a>, <a href="#pyo3_extension-compile_data">compile_data</a>, <a href="#pyo3_extension-crate_features">crate_features</a>, <a href="#pyo3_extension-crate_root">crate_root</a>, <a href="#pyo3_extension-data">data</a>, <a href="#pyo3_extension-deps">deps</a>, <a href="#pyo3_extension-edition">edition</a>,
                <a href="#pyo3_extension-imports">imports</a>, <a href="#pyo3_extension-proc_macro_deps">proc_macro_deps</a>, <a href="#pyo3_extension-rustc_env">rustc_env</a>, <a href="#pyo3_extension-rustc_env_files">rustc_env_files</a>, <a href="#pyo3_extension-rustc_flags">rustc_flags</a>, <a href="#pyo3_extension-version">version</a>,
-               <a href="#pyo3_extension-compilation_mode">compilation_mode</a>, <a href="#pyo3_extension-kwargs">kwargs</a>)
+               <a href="#pyo3_extension-compilation_mode">compilation_mode</a>, <a href="#pyo3_extension-kwargs">**kwargs</a>)
 </pre>
 
 Define a PyO3 python extension module.
