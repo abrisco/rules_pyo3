@@ -35,7 +35,7 @@ class RunfilesTest(unittest.TestCase):
 
         result = reader.read_data()
         self.assertIsInstance(result, str)
-        self.assertEqual("La-Li-Lu-Le-Lo", result)
+        self.assertEqual("La-Li-Lu-Le-Lo", result.strip())
 
     def test_transitive_runfiles_access(self) -> None:
         """A test which interacts with transitive rust runfiles."""
@@ -47,4 +47,10 @@ class RunfilesTest(unittest.TestCase):
         rlocationpath = "rules_pyo3/pyo3/private/tests/runfiles/data.txt"
         data_file = _rlocation(runfiles, rlocationpath)
 
-        self.assertEqual("La-Li-Lu-Le-Lo", data_file.read_text(encoding="utf-8"))
+        self.assertEqual(
+            "La-Li-Lu-Le-Lo", data_file.read_text(encoding="utf-8").strip()
+        )
+
+
+if __name__ == "__main__":
+    unittest.main()

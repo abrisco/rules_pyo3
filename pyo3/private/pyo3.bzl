@@ -53,7 +53,9 @@ def _get_imports(ctx, imports):
 def _py_pyo3_library_impl(ctx):
     files = []
 
-    extension = ctx.attr.extension[rust_common.test_crate_info].crate.output
+    crate_info = ctx.attr.extension[rust_common.test_crate_info].crate
+
+    extension = crate_info.output
     is_windows = extension.basename.endswith(".dll")
 
     # https://pyo3.rs/v0.22.2/building-and-distribution#manual-builds
@@ -70,7 +72,7 @@ def _py_pyo3_library_impl(ctx):
     return [
         DefaultInfo(
             files = depset([ext]),
-            runfiles = ctx.runfiles(files = files),
+            runfiles = ctx.runfiles(transitive_files = depset(files, transitive = [crate_info.data])),
         ),
         PyInfo(
             imports = _get_imports(ctx, ctx.attr.imports),

@@ -15,3 +15,7 @@ class StringSumTest(unittest.TestCase):
         result = sum_as_string(1337, 42)
         self.assertIsInstance(result, str)
         self.assertEqual("1379", result)
+
+
+if __name__ == "__main__":
+    unittest.main()
