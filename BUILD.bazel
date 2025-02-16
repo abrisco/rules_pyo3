@@ -1,5 +1,4 @@
 exports_files([
     "MODULE.bazel",
-    "README.md",
     "version.bzl",
 ])

@@ -6,12 +6,12 @@
 #     bazel run @@//pyo3/3rdparty:crates_vendor
 ###############################################################################
 
-load("@rules_rust//rust:defs.bzl", "rust_proc_macro")
+load("@rules_rust//rust:defs.bzl", "rust_library")
 
 package(default_visibility = ["//visibility:public"])
 
-rust_proc_macro(
-    name = "pyo3_macros",
+rust_library(
+    name = "heck",
     srcs = glob(
         include = ["**/*.rs"],
         allow_empty = True,
@@ -35,7 +35,7 @@ rust_proc_macro(
     ],
     tags = [
         "cargo-bazel",
-        "crate-name=pyo3-macros",
+        "crate-name=heck",
         "manual",
         "noclippy",
         "norustfmt",
@@ -50,6 +50,7 @@ rust_proc_macro(
         "@rules_rust//rust/platform:aarch64-unknown-linux-gnu": [],
         "@rules_rust//rust/platform:aarch64-unknown-nixos-gnu": [],
         "@rules_rust//rust/platform:aarch64-unknown-nto-qnx710": [],
+        "@rules_rust//rust/platform:aarch64-unknown-uefi": [],
         "@rules_rust//rust/platform:arm-unknown-linux-gnueabi": [],
         "@rules_rust//rust/platform:armv7-linux-androideabi": [],
         "@rules_rust//rust/platform:armv7-unknown-linux-gnueabi": [],
@@ -75,13 +76,8 @@ rust_proc_macro(
         "@rules_rust//rust/platform:x86_64-unknown-linux-gnu": [],
         "@rules_rust//rust/platform:x86_64-unknown-nixos-gnu": [],
         "@rules_rust//rust/platform:x86_64-unknown-none": [],
+        "@rules_rust//rust/platform:x86_64-unknown-uefi": [],
         "//conditions:default": ["@platforms//:incompatible"],
     }),
-    version = "0.21.2",
-    deps = [
-        "@rpyo3c__proc-macro2-1.0.86//:proc_macro2",
-        "@rpyo3c__pyo3-macros-backend-0.21.2//:pyo3_macros_backend",
-        "@rpyo3c__quote-1.0.37//:quote",
-        "@rpyo3c__syn-2.0.76//:syn",
-    ],
+    version = "0.5.0",
 )
