@@ -52,10 +52,10 @@ crates_vendor(
                 "abi3-py311",
                 "extension-module",
             ],
-            version = "0.21.0",
+            version = "0.23.4",
         ),
         "pyo3-ffi": crate.spec(
-            version = "0.21.0",
+            version = "0.23.4",
         ),
     },
     # Name is short to avoid windows paths being too long

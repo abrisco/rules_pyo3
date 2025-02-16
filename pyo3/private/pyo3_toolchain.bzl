@@ -84,7 +84,7 @@ Note that this toolchain expects the `pyo3` crate to be built with the following
 - [`extension-module`](https://pyo3.rs/v0.22.2/features.html?highlight=abi3#extension-module)
 
 When using [rules_rust's crate_universe](https://bazelbuild.github.io/rules_rust/crate_universe.html), this data can be plubmed into the target using the following snippet.
-```starlark
+```python
 annotations = {
     "pyo3-build-config": [
         crate.annotation(

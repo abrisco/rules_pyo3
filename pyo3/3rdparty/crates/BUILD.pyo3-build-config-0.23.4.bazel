@@ -12,7 +12,7 @@ load("@rules_rust//rust:defs.bzl", "rust_library")
 package(default_visibility = ["//visibility:public"])
 
 rust_library(
-    name = "pyo3_ffi",
+    name = "pyo3_build_config",
     srcs = glob(
         include = ["**/*.rs"],
         allow_empty = True,
@@ -35,6 +35,7 @@ rust_library(
         "abi3-py312",
         "default",
         "extension-module",
+        "resolve-config",
     ],
     crate_root = "src/lib.rs",
     edition = "2021",
@@ -43,7 +44,7 @@ rust_library(
     ],
     tags = [
         "cargo-bazel",
-        "crate-name=pyo3-ffi",
+        "crate-name=pyo3-build-config",
         "manual",
         "noclippy",
         "norustfmt",
@@ -58,6 +59,7 @@ rust_library(
         "@rules_rust//rust/platform:aarch64-unknown-linux-gnu": [],
         "@rules_rust//rust/platform:aarch64-unknown-nixos-gnu": [],
         "@rules_rust//rust/platform:aarch64-unknown-nto-qnx710": [],
+        "@rules_rust//rust/platform:aarch64-unknown-uefi": [],
         "@rules_rust//rust/platform:arm-unknown-linux-gnueabi": [],
         "@rules_rust//rust/platform:armv7-linux-androideabi": [],
         "@rules_rust//rust/platform:armv7-unknown-linux-gnueabi": [],
@@ -83,12 +85,14 @@ rust_library(
         "@rules_rust//rust/platform:x86_64-unknown-linux-gnu": [],
         "@rules_rust//rust/platform:x86_64-unknown-nixos-gnu": [],
         "@rules_rust//rust/platform:x86_64-unknown-none": [],
+        "@rules_rust//rust/platform:x86_64-unknown-uefi": [],
         "//conditions:default": ["@platforms//:incompatible"],
     }),
-    version = "0.21.2",
+    version = "0.23.4",
     deps = [
-        "@rpyo3c__libc-0.2.158//:libc",
-        "@rpyo3c__pyo3-ffi-0.21.2//:build_script_build",
+        "@rpyo3c__once_cell-1.19.0//:once_cell",
+        "@rpyo3c__pyo3-build-config-0.23.4//:build_script_build",
+        "@rpyo3c__target-lexicon-0.12.16//:target_lexicon",
     ],
 )
 
@@ -125,6 +129,7 @@ cargo_build_script(
         "abi3-py312",
         "default",
         "extension-module",
+        "resolve-config",
     ],
     crate_name = "build_script_build",
     crate_root = "build.rs",
@@ -143,23 +148,22 @@ cargo_build_script(
         "@rules_pyo3//pyo3:current_pyo3_toolchain",
     ],
     edition = "2021",
-    links = "python",
-    pkg_name = "pyo3-ffi",
+    pkg_name = "pyo3-build-config",
     rustc_flags = [
         "--cap-lints=allow",
     ],
     tags = [
         "cargo-bazel",
-        "crate-name=pyo3-ffi",
+        "crate-name=pyo3-build-config",
         "manual",
         "noclippy",
         "norustfmt",
     ],
     toolchains = ["@rules_pyo3//pyo3:current_pyo3_toolchain"],
-    version = "0.21.2",
+    version = "0.23.4",
     visibility = ["//visibility:private"],
     deps = [
-        "@rpyo3c__pyo3-build-config-0.21.2//:pyo3_build_config",
+        "@rpyo3c__target-lexicon-0.12.16//:target_lexicon",
     ],
 )
 
