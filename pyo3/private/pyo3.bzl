@@ -2,7 +2,7 @@
 
 load("@bazel_skylib//lib:paths.bzl", "paths")
 load("@rules_python//python:defs.bzl", "PyInfo")
-load("@rules_rust//rust:defs.bzl", "rust_common", "rust_shared_library")
+load("@rules_rust//rust:defs.bzl", "rust_analyzer_aspect", "rust_clippy_aspect", "rust_common", "rust_shared_library", "rustfmt_aspect")
 load(":pyo3_toolchain.bzl", "PYO3_TOOLCHAIN")
 
 def _compilation_mode_transition_impl(settings, attr):
@@ -58,7 +58,7 @@ def _py_pyo3_library_impl(ctx):
     extension = crate_info.output
     is_windows = extension.basename.endswith(".dll")
 
-    # https://pyo3.rs/v0.22.2/building-and-distribution#manual-builds
+    # https://pyo3.rs/v0.23.4/building-and-distribution#manual-builds
     ext = ctx.actions.declare_file("{}{}".format(
         ctx.label.name,
         ".pyd" if is_windows else ".so",
@@ -69,7 +69,7 @@ def _py_pyo3_library_impl(ctx):
     )
     files.append(ext)
 
-    return [
+    providers = [
         DefaultInfo(
             files = depset([ext]),
             runfiles = ctx.runfiles(transitive_files = depset(files, transitive = [crate_info.data])),
@@ -83,6 +83,18 @@ def _py_pyo3_library_impl(ctx):
             dependency_attributes = ["extension"],
         ),
     ]
+
+    # Forward any aspect-generated outputs for known rules_rust aspects.
+    if OutputGroupInfo in ctx.attr.extension:
+        output_info = ctx.attr.extension[OutputGroupInfo]
+        output_groups = {}
+        for group in ["rusfmt_checks", "clippy_checks", "rust_analyzer_crate_spec"]:
+            if hasattr(output_info, group):
+                output_groups[group] = getattr(output_info, group)
+
+        providers.append(OutputGroupInfo(**output_groups))
+
+    return providers
 
 py_pyo3_library = rule(
     doc = "Define a Python library for a PyO3 extension.",
@@ -108,6 +120,13 @@ py_pyo3_library = rule(
             # `rust_shared_library` does not provide `CrateInfo` but
             # does contain `TestCrateInfo` which wraps the data we need.
             providers = [rust_common.test_crate_info],
+            # Ensure common linters are run on the extension and yielded by
+            # this rule for ease of access.
+            aspects = [
+                rust_analyzer_aspect,
+                rust_clippy_aspect,
+                rustfmt_aspect,
+            ],
             mandatory = True,
         ),
         "imports": attr.string_list(

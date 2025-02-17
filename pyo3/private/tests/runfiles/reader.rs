@@ -10,7 +10,7 @@ fn read_data() -> PyResult<String> {
     let r = Runfiles::create().unwrap();
     let path = rlocation!(r, "rules_pyo3/pyo3/private/tests/runfiles/data.txt").unwrap();
 
-    std::fs::read_to_string(path).map_err(|e| PyFileNotFoundError::new_err(e))
+    std::fs::read_to_string(path).map_err(PyFileNotFoundError::new_err)
 }
 
 /// A Python module implemented in Rust. The name of this function must match
