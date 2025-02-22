@@ -58,7 +58,7 @@ def _pyo3_toolchain_impl(ctx):
     # modules for any target platform.
     make_variable_info = platform_common.TemplateVariableInfo({
         "PYO3_CROSS": "1",
-        "PYO3_CROSS_LIB_DIR": "$${pwd}/" + root_lib.dirname,
+        "PYO3_CROSS_LIB_DIR": root_lib.dirname,
         "PYO3_CROSS_PYTHON_IMPLEMENTATION": implementation,
         "PYO3_CROSS_PYTHON_VERSION": version,
         "PYO3_NO_PYTHON": "1",
