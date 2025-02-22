@@ -17,7 +17,7 @@ Refer to their setup documentation for guidance:
 ### bzlmod
 
 ```python
-# TODO
+bazel_dep(name = "rules_pyo3", version = "{SEE_RELEASES_PAGE}")
 ```
 
 ### WORKSPACE
