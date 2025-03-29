@@ -19,5 +19,6 @@ fn read_data() -> PyResult<String> {
 #[pymodule]
 fn reader(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(read_data, m)?)?;
+
     Ok(())
 }

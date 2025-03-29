@@ -17,7 +17,7 @@ cargo_toml_env_vars(
 )
 
 rust_proc_macro(
-    name = "indoc",
+    name = "pyo3_macros",
     srcs = glob(
         include = ["**/*.rs"],
         allow_empty = True,
@@ -34,6 +34,9 @@ rust_proc_macro(
             "WORKSPACE.bazel",
         ],
     ),
+    crate_features = [
+        "experimental-inspect",
+    ],
     crate_root = "src/lib.rs",
     edition = "2021",
     rustc_env_files = [
@@ -44,7 +47,7 @@ rust_proc_macro(
     ],
     tags = [
         "cargo-bazel",
-        "crate-name=indoc",
+        "crate-name=pyo3-macros",
         "manual",
         "noclippy",
         "norustfmt",
@@ -92,5 +95,11 @@ rust_proc_macro(
         "@rules_rust//rust/platform:x86_64-unknown-uefi": [],
         "//conditions:default": ["@platforms//:incompatible"],
     }),
-    version = "2.0.6",
+    version = "0.26.0",
+    deps = [
+        "@rpyo3c__proc-macro2-1.0.101//:proc_macro2",
+        "@rpyo3c__pyo3-macros-backend-0.26.0//:pyo3_macros_backend",
+        "@rpyo3c__quote-1.0.40//:quote",
+        "@rpyo3c__syn-2.0.106//:syn",
+    ],
 )

@@ -7,7 +7,7 @@
 ###############################################################################
 
 load("@rules_rust//cargo:defs.bzl", "cargo_toml_env_vars")
-load("@rules_rust//rust:defs.bzl", "rust_proc_macro")
+load("@rules_rust//rust:defs.bzl", "rust_library")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -16,8 +16,8 @@ cargo_toml_env_vars(
     src = "Cargo.toml",
 )
 
-rust_proc_macro(
-    name = "indoc",
+rust_library(
+    name = "syn",
     srcs = glob(
         include = ["**/*.rs"],
         allow_empty = True,
@@ -34,6 +34,17 @@ rust_proc_macro(
             "WORKSPACE.bazel",
         ],
     ),
+    crate_features = [
+        "clone-impls",
+        "default",
+        "derive",
+        "extra-traits",
+        "full",
+        "parsing",
+        "printing",
+        "proc-macro",
+        "visit-mut",
+    ],
     crate_root = "src/lib.rs",
     edition = "2021",
     rustc_env_files = [
@@ -44,7 +55,7 @@ rust_proc_macro(
     ],
     tags = [
         "cargo-bazel",
-        "crate-name=indoc",
+        "crate-name=syn",
         "manual",
         "noclippy",
         "norustfmt",
@@ -92,5 +103,10 @@ rust_proc_macro(
         "@rules_rust//rust/platform:x86_64-unknown-uefi": [],
         "//conditions:default": ["@platforms//:incompatible"],
     }),
-    version = "2.0.6",
+    version = "2.0.106",
+    deps = [
+        "@rpyo3c__proc-macro2-1.0.101//:proc_macro2",
+        "@rpyo3c__quote-1.0.40//:quote",
+        "@rpyo3c__unicode-ident-1.0.18//:unicode_ident",
+    ],
 )

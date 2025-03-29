@@ -1,3 +1,4 @@
+load("@bazel_skylib//rules:diff_test.bzl", "diff_test")
 load("@bazel_skylib//rules:expand_template.bzl", "expand_template")
 load("@rules_python//python:defs.bzl", "py_test")
 load("//pyo3:defs.bzl", "pyo3_extension")
@@ -14,7 +15,7 @@ MODES = [
         name = "string_sum_{}_src".format(mode),
         out = "string_sum_{}.rs".format(mode),
         substitutions = {
-            "fn string_sum_current(": "fn string_sum_{}(".format(mode),
+            "string_sum_current {": "string_sum_%s {" % mode,
         },
         template = "string_sum_current.rs",
     )
@@ -29,6 +30,24 @@ MODES = [
         srcs = ["string_sum_{}.rs".format(mode)],
         compilation_mode = mode,
         edition = "2021",
+    )
+    for mode in MODES
+]
+
+[
+    filegroup(
+        name = "string_sum_{}_type_stubs".format(mode),
+        srcs = [":string_sum_{}".format(mode)],
+        output_group = "pyo3_type_stubs",
+    )
+    for mode in MODES
+]
+
+[
+    diff_test(
+        name = "string_sum_{}_type_stubs_diff_test".format(mode),
+        file1 = "string_sum_current_expected.pyi",
+        file2 = "string_sum_{}_type_stubs".format(mode),
     )
     for mode in MODES
 ]
