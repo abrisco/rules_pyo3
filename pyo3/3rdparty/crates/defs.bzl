@@ -295,8 +295,8 @@ def aliases(
 _NORMAL_DEPENDENCIES = {
     "": {
         _COMMON_CONDITION: {
-            "pyo3": Label("@rpyo3c//:pyo3-0.23.4"),
-            "pyo3-ffi": Label("@rpyo3c//:pyo3-ffi-0.23.4"),
+            "pyo3": Label("@rpyo3c//:pyo3-0.24.0"),
+            "pyo3-ffi": Label("@rpyo3c//:pyo3-ffi-0.24.0"),
         },
     },
 }
@@ -408,12 +408,12 @@ def crate_repositories():
     """
     maybe(
         http_archive,
-        name = "rpyo3c__autocfg-1.3.0",
-        sha256 = "0c4b4d0bd25bd0b74681c0ad21497610ce1b7c91b1022cd21c80c6fbdd9476b0",
+        name = "rpyo3c__autocfg-1.4.0",
+        sha256 = "ace50bade8e6234aa140d9a2f552bbee1db4d353f69b8217bc503490fc1a9f26",
         type = "tar.gz",
-        urls = ["https://static.crates.io/crates/autocfg/1.3.0/download"],
-        strip_prefix = "autocfg-1.3.0",
-        build_file = Label("//pyo3/3rdparty/crates:BUILD.autocfg-1.3.0.bazel"),
+        urls = ["https://static.crates.io/crates/autocfg/1.4.0/download"],
+        strip_prefix = "autocfg-1.4.0",
+        build_file = Label("//pyo3/3rdparty/crates:BUILD.autocfg-1.4.0.bazel"),
     )
 
     maybe(
@@ -438,22 +438,22 @@ def crate_repositories():
 
     maybe(
         http_archive,
-        name = "rpyo3c__indoc-2.0.5",
-        sha256 = "b248f5224d1d606005e02c97f5aa4e88eeb230488bcc03bc9ca4d7991399f2b5",
+        name = "rpyo3c__indoc-2.0.6",
+        sha256 = "f4c7245a08504955605670dbf141fceab975f15ca21570696aebe9d2e71576bd",
         type = "tar.gz",
-        urls = ["https://static.crates.io/crates/indoc/2.0.5/download"],
-        strip_prefix = "indoc-2.0.5",
-        build_file = Label("//pyo3/3rdparty/crates:BUILD.indoc-2.0.5.bazel"),
+        urls = ["https://static.crates.io/crates/indoc/2.0.6/download"],
+        strip_prefix = "indoc-2.0.6",
+        build_file = Label("//pyo3/3rdparty/crates:BUILD.indoc-2.0.6.bazel"),
     )
 
     maybe(
         http_archive,
-        name = "rpyo3c__libc-0.2.158",
-        sha256 = "d8adc4bb1803a324070e64a98ae98f38934d91957a99cfb3a43dcbc01bc56439",
+        name = "rpyo3c__libc-0.2.171",
+        sha256 = "c19937216e9d3aa9956d9bb8dfc0b0c8beb6058fc4f7a4dc4d850edf86a237d6",
         type = "tar.gz",
-        urls = ["https://static.crates.io/crates/libc/0.2.158/download"],
-        strip_prefix = "libc-0.2.158",
-        build_file = Label("//pyo3/3rdparty/crates:BUILD.libc-0.2.158.bazel"),
+        urls = ["https://static.crates.io/crates/libc/0.2.171/download"],
+        strip_prefix = "libc-0.2.171",
+        build_file = Label("//pyo3/3rdparty/crates:BUILD.libc-0.2.171.bazel"),
     )
 
     maybe(
@@ -468,141 +468,141 @@ def crate_repositories():
 
     maybe(
         http_archive,
-        name = "rpyo3c__once_cell-1.19.0",
-        sha256 = "3fdb12b2476b595f9358c5161aa467c2438859caa136dec86c26fdd2efe17b92",
+        name = "rpyo3c__once_cell-1.21.3",
+        sha256 = "42f5e15c9953c5e4ccceeb2e7382a716482c34515315f7b03532b8b4e8393d2d",
         type = "tar.gz",
-        urls = ["https://static.crates.io/crates/once_cell/1.19.0/download"],
-        strip_prefix = "once_cell-1.19.0",
-        build_file = Label("//pyo3/3rdparty/crates:BUILD.once_cell-1.19.0.bazel"),
+        urls = ["https://static.crates.io/crates/once_cell/1.21.3/download"],
+        strip_prefix = "once_cell-1.21.3",
+        build_file = Label("//pyo3/3rdparty/crates:BUILD.once_cell-1.21.3.bazel"),
     )
 
     maybe(
         http_archive,
-        name = "rpyo3c__portable-atomic-1.7.0",
-        sha256 = "da544ee218f0d287a911e9c99a39a8c9bc8fcad3cb8db5959940044ecfc67265",
+        name = "rpyo3c__portable-atomic-1.11.0",
+        sha256 = "350e9b48cbc6b0e028b0473b114454c6316e57336ee184ceab6e53f72c178b3e",
         type = "tar.gz",
-        urls = ["https://static.crates.io/crates/portable-atomic/1.7.0/download"],
-        strip_prefix = "portable-atomic-1.7.0",
-        build_file = Label("//pyo3/3rdparty/crates:BUILD.portable-atomic-1.7.0.bazel"),
+        urls = ["https://static.crates.io/crates/portable-atomic/1.11.0/download"],
+        strip_prefix = "portable-atomic-1.11.0",
+        build_file = Label("//pyo3/3rdparty/crates:BUILD.portable-atomic-1.11.0.bazel"),
     )
 
     maybe(
         http_archive,
-        name = "rpyo3c__proc-macro2-1.0.86",
-        sha256 = "5e719e8df665df0d1c8fbfd238015744736151d4445ec0836b8e628aae103b77",
+        name = "rpyo3c__proc-macro2-1.0.94",
+        sha256 = "a31971752e70b8b2686d7e46ec17fb38dad4051d94024c88df49b667caea9c84",
         type = "tar.gz",
-        urls = ["https://static.crates.io/crates/proc-macro2/1.0.86/download"],
-        strip_prefix = "proc-macro2-1.0.86",
-        build_file = Label("//pyo3/3rdparty/crates:BUILD.proc-macro2-1.0.86.bazel"),
+        urls = ["https://static.crates.io/crates/proc-macro2/1.0.94/download"],
+        strip_prefix = "proc-macro2-1.0.94",
+        build_file = Label("//pyo3/3rdparty/crates:BUILD.proc-macro2-1.0.94.bazel"),
     )
 
     maybe(
         http_archive,
-        name = "rpyo3c__pyo3-0.23.4",
-        sha256 = "57fe09249128b3173d092de9523eaa75136bf7ba85e0d69eca241c7939c933cc",
+        name = "rpyo3c__pyo3-0.24.0",
+        sha256 = "7f1c6c3591120564d64db2261bec5f910ae454f01def849b9c22835a84695e86",
         type = "tar.gz",
-        urls = ["https://static.crates.io/crates/pyo3/0.23.4/download"],
-        strip_prefix = "pyo3-0.23.4",
-        build_file = Label("//pyo3/3rdparty/crates:BUILD.pyo3-0.23.4.bazel"),
+        urls = ["https://static.crates.io/crates/pyo3/0.24.0/download"],
+        strip_prefix = "pyo3-0.24.0",
+        build_file = Label("//pyo3/3rdparty/crates:BUILD.pyo3-0.24.0.bazel"),
     )
 
     maybe(
         http_archive,
-        name = "rpyo3c__pyo3-build-config-0.23.4",
+        name = "rpyo3c__pyo3-build-config-0.24.0",
         patch_args = [
             "-p1",
         ],
         patches = [
             "@rules_pyo3//pyo3/3rdparty/patches:resolve_cross_compile_config_path.patch",
         ],
-        sha256 = "1cd3927b5a78757a0d71aa9dff669f903b1eb64b54142a9bd9f757f8fde65fd7",
+        sha256 = "e9b6c2b34cf71427ea37c7001aefbaeb85886a074795e35f161f5aecc7620a7a",
         type = "tar.gz",
-        urls = ["https://static.crates.io/crates/pyo3-build-config/0.23.4/download"],
-        strip_prefix = "pyo3-build-config-0.23.4",
-        build_file = Label("//pyo3/3rdparty/crates:BUILD.pyo3-build-config-0.23.4.bazel"),
+        urls = ["https://static.crates.io/crates/pyo3-build-config/0.24.0/download"],
+        strip_prefix = "pyo3-build-config-0.24.0",
+        build_file = Label("//pyo3/3rdparty/crates:BUILD.pyo3-build-config-0.24.0.bazel"),
     )
 
     maybe(
         http_archive,
-        name = "rpyo3c__pyo3-ffi-0.23.4",
-        sha256 = "dab6bb2102bd8f991e7749f130a70d05dd557613e39ed2deeee8e9ca0c4d548d",
+        name = "rpyo3c__pyo3-ffi-0.24.0",
+        sha256 = "5507651906a46432cdda02cd02dd0319f6064f1374c9147c45b978621d2c3a9c",
         type = "tar.gz",
-        urls = ["https://static.crates.io/crates/pyo3-ffi/0.23.4/download"],
-        strip_prefix = "pyo3-ffi-0.23.4",
-        build_file = Label("//pyo3/3rdparty/crates:BUILD.pyo3-ffi-0.23.4.bazel"),
+        urls = ["https://static.crates.io/crates/pyo3-ffi/0.24.0/download"],
+        strip_prefix = "pyo3-ffi-0.24.0",
+        build_file = Label("//pyo3/3rdparty/crates:BUILD.pyo3-ffi-0.24.0.bazel"),
     )
 
     maybe(
         http_archive,
-        name = "rpyo3c__pyo3-macros-0.23.4",
-        sha256 = "91871864b353fd5ffcb3f91f2f703a22a9797c91b9ab497b1acac7b07ae509c7",
+        name = "rpyo3c__pyo3-macros-0.24.0",
+        sha256 = "b0d394b5b4fd8d97d48336bb0dd2aebabad39f1d294edd6bcd2cccf2eefe6f42",
         type = "tar.gz",
-        urls = ["https://static.crates.io/crates/pyo3-macros/0.23.4/download"],
-        strip_prefix = "pyo3-macros-0.23.4",
-        build_file = Label("//pyo3/3rdparty/crates:BUILD.pyo3-macros-0.23.4.bazel"),
+        urls = ["https://static.crates.io/crates/pyo3-macros/0.24.0/download"],
+        strip_prefix = "pyo3-macros-0.24.0",
+        build_file = Label("//pyo3/3rdparty/crates:BUILD.pyo3-macros-0.24.0.bazel"),
     )
 
     maybe(
         http_archive,
-        name = "rpyo3c__pyo3-macros-backend-0.23.4",
-        sha256 = "43abc3b80bc20f3facd86cd3c60beed58c3e2aa26213f3cda368de39c60a27e4",
+        name = "rpyo3c__pyo3-macros-backend-0.24.0",
+        sha256 = "fd72da09cfa943b1080f621f024d2ef7e2773df7badd51aa30a2be1f8caa7c8e",
         type = "tar.gz",
-        urls = ["https://static.crates.io/crates/pyo3-macros-backend/0.23.4/download"],
-        strip_prefix = "pyo3-macros-backend-0.23.4",
-        build_file = Label("//pyo3/3rdparty/crates:BUILD.pyo3-macros-backend-0.23.4.bazel"),
+        urls = ["https://static.crates.io/crates/pyo3-macros-backend/0.24.0/download"],
+        strip_prefix = "pyo3-macros-backend-0.24.0",
+        build_file = Label("//pyo3/3rdparty/crates:BUILD.pyo3-macros-backend-0.24.0.bazel"),
     )
 
     maybe(
         http_archive,
-        name = "rpyo3c__quote-1.0.37",
-        sha256 = "b5b9d34b8991d19d98081b46eacdd8eb58c6f2b201139f7c5f643cc155a633af",
+        name = "rpyo3c__quote-1.0.40",
+        sha256 = "1885c039570dc00dcb4ff087a89e185fd56bae234ddc7f056a945bf36467248d",
         type = "tar.gz",
-        urls = ["https://static.crates.io/crates/quote/1.0.37/download"],
-        strip_prefix = "quote-1.0.37",
-        build_file = Label("//pyo3/3rdparty/crates:BUILD.quote-1.0.37.bazel"),
+        urls = ["https://static.crates.io/crates/quote/1.0.40/download"],
+        strip_prefix = "quote-1.0.40",
+        build_file = Label("//pyo3/3rdparty/crates:BUILD.quote-1.0.40.bazel"),
     )
 
     maybe(
         http_archive,
-        name = "rpyo3c__syn-2.0.76",
-        sha256 = "578e081a14e0cefc3279b0472138c513f37b41a08d5a3cca9b6e4e8ceb6cd525",
+        name = "rpyo3c__syn-2.0.100",
+        sha256 = "b09a44accad81e1ba1cd74a32461ba89dee89095ba17b32f5d03683b1b1fc2a0",
         type = "tar.gz",
-        urls = ["https://static.crates.io/crates/syn/2.0.76/download"],
-        strip_prefix = "syn-2.0.76",
-        build_file = Label("//pyo3/3rdparty/crates:BUILD.syn-2.0.76.bazel"),
+        urls = ["https://static.crates.io/crates/syn/2.0.100/download"],
+        strip_prefix = "syn-2.0.100",
+        build_file = Label("//pyo3/3rdparty/crates:BUILD.syn-2.0.100.bazel"),
     )
 
     maybe(
         http_archive,
-        name = "rpyo3c__target-lexicon-0.12.16",
-        sha256 = "61c41af27dd6d1e27b1b16b489db798443478cef1f06a660c96db617ba5de3b1",
+        name = "rpyo3c__target-lexicon-0.13.2",
+        sha256 = "e502f78cdbb8ba4718f566c418c52bc729126ffd16baee5baa718cf25dd5a69a",
         type = "tar.gz",
-        urls = ["https://static.crates.io/crates/target-lexicon/0.12.16/download"],
-        strip_prefix = "target-lexicon-0.12.16",
-        build_file = Label("//pyo3/3rdparty/crates:BUILD.target-lexicon-0.12.16.bazel"),
+        urls = ["https://static.crates.io/crates/target-lexicon/0.13.2/download"],
+        strip_prefix = "target-lexicon-0.13.2",
+        build_file = Label("//pyo3/3rdparty/crates:BUILD.target-lexicon-0.13.2.bazel"),
     )
 
     maybe(
         http_archive,
-        name = "rpyo3c__unicode-ident-1.0.12",
-        sha256 = "3354b9ac3fae1ff6755cb6db53683adb661634f67557942dea4facebec0fee4b",
+        name = "rpyo3c__unicode-ident-1.0.18",
+        sha256 = "5a5f39404a5da50712a4c1eecf25e90dd62b613502b7e925fd4e4d19b5c96512",
         type = "tar.gz",
-        urls = ["https://static.crates.io/crates/unicode-ident/1.0.12/download"],
-        strip_prefix = "unicode-ident-1.0.12",
-        build_file = Label("//pyo3/3rdparty/crates:BUILD.unicode-ident-1.0.12.bazel"),
+        urls = ["https://static.crates.io/crates/unicode-ident/1.0.18/download"],
+        strip_prefix = "unicode-ident-1.0.18",
+        build_file = Label("//pyo3/3rdparty/crates:BUILD.unicode-ident-1.0.18.bazel"),
     )
 
     maybe(
         http_archive,
-        name = "rpyo3c__unindent-0.2.3",
-        sha256 = "c7de7d73e1754487cb58364ee906a499937a0dfabd86bcb980fa99ec8c8fa2ce",
+        name = "rpyo3c__unindent-0.2.4",
+        sha256 = "7264e107f553ccae879d21fbea1d6724ac785e8c3bfc762137959b5802826ef3",
         type = "tar.gz",
-        urls = ["https://static.crates.io/crates/unindent/0.2.3/download"],
-        strip_prefix = "unindent-0.2.3",
-        build_file = Label("//pyo3/3rdparty/crates:BUILD.unindent-0.2.3.bazel"),
+        urls = ["https://static.crates.io/crates/unindent/0.2.4/download"],
+        strip_prefix = "unindent-0.2.4",
+        build_file = Label("//pyo3/3rdparty/crates:BUILD.unindent-0.2.4.bazel"),
     )
 
     return [
-        struct(repo = "rpyo3c__pyo3-0.23.4", is_dev_dep = False),
-        struct(repo = "rpyo3c__pyo3-ffi-0.23.4", is_dev_dep = False),
+        struct(repo = "rpyo3c__pyo3-0.24.0", is_dev_dep = False),
+        struct(repo = "rpyo3c__pyo3-ffi-0.24.0", is_dev_dep = False),
     ]
