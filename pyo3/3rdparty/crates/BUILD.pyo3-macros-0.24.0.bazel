@@ -6,13 +6,18 @@
 #     bazel run @@//pyo3/3rdparty:crates_vendor
 ###############################################################################
 
-load("@rules_rust//cargo:defs.bzl", "cargo_build_script")
-load("@rules_rust//rust:defs.bzl", "rust_library")
+load("@rules_rust//cargo:defs.bzl", "cargo_toml_env_vars")
+load("@rules_rust//rust:defs.bzl", "rust_proc_macro")
 
 package(default_visibility = ["//visibility:public"])
 
-rust_library(
-    name = "pyo3_ffi",
+cargo_toml_env_vars(
+    name = "cargo_toml_env_vars",
+    src = "Cargo.toml",
+)
+
+rust_proc_macro(
+    name = "pyo3_macros",
     srcs = glob(
         include = ["**/*.rs"],
         allow_empty = True,
@@ -29,21 +34,17 @@ rust_library(
             "WORKSPACE.bazel",
         ],
     ),
-    crate_features = [
-        "abi3",
-        "abi3-py311",
-        "abi3-py312",
-        "default",
-        "extension-module",
-    ],
     crate_root = "src/lib.rs",
     edition = "2021",
+    rustc_env_files = [
+        ":cargo_toml_env_vars",
+    ],
     rustc_flags = [
         "--cap-lints=allow",
     ],
     tags = [
         "cargo-bazel",
-        "crate-name=pyo3-ffi",
+        "crate-name=pyo3-macros",
         "manual",
         "noclippy",
         "norustfmt",
@@ -87,86 +88,11 @@ rust_library(
         "@rules_rust//rust/platform:x86_64-unknown-uefi": [],
         "//conditions:default": ["@platforms//:incompatible"],
     }),
-    version = "0.23.4",
+    version = "0.24.0",
     deps = [
-        "@rpyo3c__libc-0.2.158//:libc",
-        "@rpyo3c__pyo3-ffi-0.23.4//:build_script_build",
+        "@rpyo3c__proc-macro2-1.0.94//:proc_macro2",
+        "@rpyo3c__pyo3-macros-backend-0.24.0//:pyo3_macros_backend",
+        "@rpyo3c__quote-1.0.40//:quote",
+        "@rpyo3c__syn-2.0.100//:syn",
     ],
-)
-
-cargo_build_script(
-    name = "_bs",
-    srcs = glob(
-        include = ["**/*.rs"],
-        allow_empty = True,
-    ),
-    build_script_env = {
-        "PYO3_CROSS": "$(PYO3_CROSS)",
-        "PYO3_CROSS_LIB_DIR": "$(PYO3_CROSS_LIB_DIR)",
-        "PYO3_CROSS_PYTHON_IMPLEMENTATION": "$(PYO3_CROSS_PYTHON_IMPLEMENTATION)",
-        "PYO3_CROSS_PYTHON_VERSION": "$(PYO3_CROSS_PYTHON_VERSION)",
-        "PYO3_NO_PYTHON": "$(PYO3_NO_PYTHON)",
-        "PYO3_PYTHON": "$(PYO3_PYTHON)",
-    },
-    compile_data = glob(
-        include = ["**"],
-        allow_empty = True,
-        exclude = [
-            "**/* *",
-            "**/*.rs",
-            ".tmp_git_root/**/*",
-            "BUILD",
-            "BUILD.bazel",
-            "WORKSPACE",
-            "WORKSPACE.bazel",
-        ],
-    ),
-    crate_features = [
-        "abi3",
-        "abi3-py311",
-        "abi3-py312",
-        "default",
-        "extension-module",
-    ],
-    crate_name = "build_script_build",
-    crate_root = "build.rs",
-    data = glob(
-        include = ["**"],
-        allow_empty = True,
-        exclude = [
-            "**/* *",
-            ".tmp_git_root/**/*",
-            "BUILD",
-            "BUILD.bazel",
-            "WORKSPACE",
-            "WORKSPACE.bazel",
-        ],
-    ) + [
-        "@rules_pyo3//pyo3:current_pyo3_toolchain",
-    ],
-    edition = "2021",
-    links = "python",
-    pkg_name = "pyo3-ffi",
-    rustc_flags = [
-        "--cap-lints=allow",
-    ],
-    tags = [
-        "cargo-bazel",
-        "crate-name=pyo3-ffi",
-        "manual",
-        "noclippy",
-        "norustfmt",
-    ],
-    toolchains = ["@rules_pyo3//pyo3:current_pyo3_toolchain"],
-    version = "0.23.4",
-    visibility = ["//visibility:private"],
-    deps = [
-        "@rpyo3c__pyo3-build-config-0.23.4//:pyo3_build_config",
-    ],
-)
-
-alias(
-    name = "build_script_build",
-    actual = ":_bs",
-    tags = ["manual"],
 )
