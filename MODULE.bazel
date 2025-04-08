@@ -21,6 +21,7 @@ use_repo(
 register_toolchains(
     "//pyo3/toolchains:toolchain",
     "//pyo3/toolchains:rust_toolchain",
+    dev_dependency = True
 )
 
 bazel_dep(name = "stardoc", version = "0.8.0", dev_dependency = True, repo_name = "io_bazel_stardoc")
