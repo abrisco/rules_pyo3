@@ -20,7 +20,7 @@ jobs:
       matrix:
         include:
           - os: macos-latest
-          - os: ubuntu-20.04
+          - os: ubuntu-latest
           - os: windows-2019
     steps:
       # Checkout the code
@@ -49,7 +49,7 @@ jobs:
         if: startswith(runner.os, 'Windows')
 
   ci-buildifier:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       # Checkout the code
       - uses: actions/checkout@v4
