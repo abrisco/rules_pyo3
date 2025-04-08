@@ -169,6 +169,12 @@ and <code>rules_python</code>.</p>
 </ul>
 <h3 id="bzlmod"><a class="header" href="#bzlmod">bzlmod</a></h3>
 <pre><code class="language-python">bazel_dep(name = "rules_pyo3", version = "{SEE_RELEASES_PAGE}")
+
+# Register default toolchains or customize your own.
+register_toolchains(
+    "@rules_pyo3//pyo3/toolchains:toolchain",
+    "@rules_pyo3//pyo3/toolchains:rust_toolchain",
+)
 </code></pre>
 <h3 id="workspace"><a class="header" href="#workspace">WORKSPACE</a></h3>
 <p>Once <code>rules_rust</code> and <code>rules_python</code> toolchains are all configured, the following
