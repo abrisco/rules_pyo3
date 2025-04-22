@@ -18,6 +18,12 @@ Refer to their setup documentation for guidance:
 
 ```python
 bazel_dep(name = "rules_pyo3", version = "{SEE_RELEASES_PAGE}")
+
+# Register default toolchains or customize your own.
+register_toolchains(
+    "@rules_pyo3//pyo3/toolchains:toolchain",
+    "@rules_pyo3//pyo3/toolchains:rust_toolchain",
+)
 ```
 
 ### WORKSPACE

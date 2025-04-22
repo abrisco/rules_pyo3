@@ -19,44 +19,18 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: macos-14
-          - os: ubuntu-20.04
+          - os: macos-latest
+          - os: ubuntu-latest
           - os: windows-2019
     steps:
       # Checkout the code
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
-      # Caches and restores the Bazel outputs.
-      - name: Retain Bazel cache (linux)
-        uses: actions/cache@v2
-        env:
-          cache-name: bazel-cache
+      - uses: bazel-contrib/setup-bazel@0.14.0
         with:
-          path: |
-            ~/.cache/bazelisk
-            ~/.cache/bazel
-          key: ${{ runner.os }}-${{ env.cache-name }}
-        if: startswith(runner.os, 'Linux')
-      - name: Retain Bazel cache (MacOS)
-        uses: actions/cache@v2
-        env:
-          cache-name: bazel-cache
-        with:
-          path: |
-            ~/.cache/bazelisk
-            /private/var/tmp/_bazel_runner
-          key: ${{ runner.os }}-${{ env.cache-name }}
-        if: startswith(runner.os, 'MacOS')
-      - name: Retain Bazel cache (Windows)
-        uses: actions/cache@v2
-        env:
-          cache-name: bazel-cache
-        with:
-          path: |
-            ~/.cache/bazelisk
-            C:/bzl
-          key: ${{ runner.os }}-${{ env.cache-name }}
-        if: startswith(runner.os, 'Windows')
+          bazelisk-cache: true
+          disk-cache: ${{ github.workflow }}
+          repository-cache: true
 
       - name: Setup Bazelrc (Windows)
         run: |
@@ -75,10 +49,10 @@ jobs:
         if: startswith(runner.os, 'Windows')
 
   ci-buildifier:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       # Checkout the code
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Download Buildifier
         run: |
           wget "https://github.com/bazelbuild/buildtools/releases/download/v8.0.3/buildifier-linux-amd64" -O buildifier
@@ -87,10 +61,10 @@ jobs:
         run: ./buildifier -lint=warn -mode=check -warnings=all -r ${{ github.workspace }}
 
   ci-lint-and-format:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       # Checkout the code
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Set up Python
         uses: actions/setup-python@v2
         with:

@@ -22,7 +22,7 @@ jobs:
     if: ${{ github.repository_owner == 'abrisco' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Detect the current version
         run: |
           version="$(grep 'VERSION =' ./version.bzl | sed 's/VERSION = "//' | sed 's/"//')"
