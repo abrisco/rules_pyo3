@@ -32,6 +32,5 @@ current_rust_pyo3_toolchain(
 cc_library(
     name = "py_headers_only",
     hdrs = ["@rules_python//python/cc:current_py_cc_headers"],
-    includes = ["@rules_python//python/cc:includes"],
     visibility = ["//visibility:public"],
 )
