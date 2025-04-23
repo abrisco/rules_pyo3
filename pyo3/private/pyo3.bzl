@@ -208,7 +208,6 @@ def pyo3_extension(
 
     all_rustc_flags = rustc_flags + macos_flags
 
-
     rust_shared_library(
         name = name + "_shared",
         aliases = aliases,
