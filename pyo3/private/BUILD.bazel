@@ -1,4 +1,5 @@
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
+load("@rules_cc//cc:defs.bzl", "cc_library")
 load(
     ":pyo3_toolchain.bzl",
     "current_pyo3_toolchain",
@@ -25,5 +26,11 @@ current_rust_pyo3_toolchain(
         "no-clippy",
         "no-rustfmt",
     ],
+    visibility = ["//visibility:public"],
+)
+
+cc_library(
+    name = "py_headers_only",
+    hdrs = ["@rules_python//python/cc:current_py_cc_headers"],
     visibility = ["//visibility:public"],
 )
