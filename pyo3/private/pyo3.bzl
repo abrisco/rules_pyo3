@@ -198,6 +198,16 @@ def pyo3_extension(
     tags = kwargs.pop("tags", [])
     visibility = kwargs.pop("visibility", None)
 
+    # Add macOS-specific flags
+    # https://pyo3.rs/v0.24.2/building-and-distribution.html#macos
+    macos_flags = select({
+        "@rules_rust//rust/platform:aarch64-apple-darwin": ["-C", "link-arg=-undefined", "-C", "link-arg=dynamic_lookup"],
+        "@rules_rust//rust/platform:x86_64-apple-darwin": ["-C", "link-arg=-undefined", "-C", "link-arg=dynamic_lookup"],
+        "//conditions:default": [],
+    })
+
+    all_rustc_flags = rustc_flags + macos_flags
+
     rust_shared_library(
         name = name + "_shared",
         aliases = aliases,
@@ -208,13 +218,13 @@ def pyo3_extension(
         data = data,
         deps = [
             Label("//pyo3/private:current_rust_pyo3_toolchain"),
-            Label("@rules_python//python/cc:current_py_cc_libs"),
+            Label("//pyo3/private:py_headers_only"),
         ] + deps,
         edition = edition,
         proc_macro_deps = proc_macro_deps,
         rustc_env = rustc_env,
         rustc_env_files = rustc_env_files,
-        rustc_flags = rustc_flags,
+        rustc_flags = all_rustc_flags,
         srcs = srcs,
         tags = depset(tags + ["manual"]).to_list(),
         version = version,
