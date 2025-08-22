@@ -7,3 +7,4 @@ user.bazelrc
 /.vscode/
 
 /rust-project.json
+/target
