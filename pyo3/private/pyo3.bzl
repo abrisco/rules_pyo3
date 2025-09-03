@@ -2,7 +2,14 @@
 
 load("@bazel_skylib//lib:paths.bzl", "paths")
 load("@rules_python//python:defs.bzl", "PyInfo")
-load("@rules_rust//rust:defs.bzl", "rust_analyzer_aspect", "rust_clippy_aspect", "rust_common", "rust_shared_library", "rustfmt_aspect")
+load(
+    "@rules_rust//rust:defs.bzl",
+    "rust_analyzer_aspect",
+    "rust_clippy_aspect",
+    "rust_common",
+    "rust_shared_library",
+    "rustfmt_aspect",
+)
 load(":pyo3_toolchain.bzl", "PYO3_TOOLCHAIN")
 
 def _compilation_mode_transition_impl(settings, attr):
@@ -50,7 +57,28 @@ def _get_imports(ctx, imports):
 
     return depset(result)
 
+def _stubs_enabled(stubs_flag, toolchain):
+    """Determine if stubs should be generated.
+
+    Args:
+        stubs_flag (int): The `py_pyo3_library.stubs` attribute.
+        toolchain (pyo3_toolchain): The current toolchain.
+
+    Returns:
+        bool: Whether or not to generate stubs.
+    """
+
+    if stubs_flag == 1:
+        return True
+
+    if stubs_flag == 0:
+        return False
+
+    return toolchain.experimental_stubgen
+
 def _py_pyo3_library_impl(ctx):
+    toolchain = ctx.toolchains[PYO3_TOOLCHAIN]
+
     files = []
 
     crate_info = ctx.attr.extension[rust_common.test_crate_info].crate
@@ -68,6 +96,23 @@ def _py_pyo3_library_impl(ctx):
         target_file = extension,
     )
     files.append(ext)
+
+    stub = None
+    if _stubs_enabled(ctx.attr.stubs, toolchain):
+        stub = ctx.actions.declare_file("{}.pyi".format(ctx.label.name))
+
+        args = ctx.actions.args()
+        args.add(ctx.label.name, format = "--module_name=%s")
+        args.add(ext, format = "--module_path=%s")
+        args.add(stub, format = "--output=%s")
+        ctx.actions.run(
+            mnemonic = "PyO3StubGen",
+            outputs = [stub],
+            inputs = [ext],
+            executable = ctx.executable._stubgen,
+            arguments = [args],
+        )
+        files.append(stub)
 
     providers = [
         DefaultInfo(
@@ -91,6 +136,9 @@ def _py_pyo3_library_impl(ctx):
         for group in ["rusfmt_checks", "clippy_checks", "rust_analyzer_crate_spec"]:
             if hasattr(output_info, group):
                 output_groups[group] = getattr(output_info, group)
+
+        if stub:
+            output_groups["pyo3_type_stubs"] = depset([stub])
 
         providers.append(OutputGroupInfo(**output_groups))
 
@@ -132,11 +180,27 @@ py_pyo3_library = rule(
         "imports": attr.string_list(
             doc = "List of import directories to be added to the `PYTHONPATH`.",
         ),
+        "stubs": attr.int(
+            doc = "Whether or not to generate stubs. `-1` will default to the global config, `0` will never generate, and `1` will always generate stubs.",
+            default = -1,
+            values = [
+                -1,
+                0,
+                1,
+            ],
+        ),
+        "_stubgen": attr.label(
+            doc = "A binary used to generate pythons type stubs.",
+            cfg = "exec",
+            executable = True,
+            default = Label("//pyo3/private:stubgen"),
+        ),
     },
     toolchains = [PYO3_TOOLCHAIN],
 )
 
 def pyo3_extension(
+        *,
         name,
         srcs,
         aliases = {},
@@ -151,6 +215,7 @@ def pyo3_extension(
         rustc_env = {},
         rustc_env_files = [],
         rustc_flags = [],
+        stubs = None,
         version = None,
         compilation_mode = "opt",
         **kwargs):
@@ -189,6 +254,7 @@ def pyo3_extension(
             For more details see [rust_shared_library][rsl].
         rustc_flags (list, optional): List of compiler flags passed to `rustc`.
             For more details see [rust_shared_library][rsl].
+        stubs (bool, optional): Whether or not to generate stubs (`.pyi` file) for the module.
         version (str, optional): A version to inject in the cargo environment variable.
             For more details see [rust_shared_library][rsl].
         compilation_mode (str, optional): The [compilation_mode](https://bazel.build/reference/command-line-reference#flag--compilation_mode)
@@ -199,10 +265,17 @@ def pyo3_extension(
     visibility = kwargs.pop("visibility", None)
 
     # Add macOS-specific flags
-    # https://pyo3.rs/v0.24.2/building-and-distribution.html#macos
+
     macos_flags = select({
-        "@rules_rust//rust/platform:aarch64-apple-darwin": ["-C", "link-arg=-undefined", "-C", "link-arg=dynamic_lookup"],
-        "@rules_rust//rust/platform:x86_64-apple-darwin": ["-C", "link-arg=-undefined", "-C", "link-arg=dynamic_lookup"],
+        "@platforms//os:macos": [
+            # https://pyo3.rs/v0.24.2/building-and-distribution.html#macos
+            "-C",
+            "link-arg=-undefined",
+            "-C",
+            "link-arg=dynamic_lookup",
+            # Required due to: https://github.com/PyO3/pyo3/issues/5035
+            "--codegen=link-arg=-Wl,-no_fixup_chains",
+        ],
         "//conditions:default": [],
     })
 
@@ -210,6 +283,7 @@ def pyo3_extension(
 
     rust_shared_library(
         name = name + "_shared",
+        srcs = srcs,
         aliases = aliases,
         compile_data = compile_data,
         crate_features = crate_features,
@@ -225,16 +299,24 @@ def pyo3_extension(
         rustc_env = rustc_env,
         rustc_env_files = rustc_env_files,
         rustc_flags = all_rustc_flags,
-        srcs = srcs,
         tags = depset(tags + ["manual"]).to_list(),
         version = version,
+        visibility = ["//visibility:private"],
         **kwargs
     )
+
+    if stubs == None:
+        stubs_int = -1
+    elif stubs:
+        stubs_int = 1
+    else:
+        stubs_int = 0
 
     py_pyo3_library(
         name = name,
         extension = name + "_shared",
         compilation_mode = compilation_mode,
+        stubs = stubs_int,
         imports = imports,
         tags = tags,
         visibility = visibility,

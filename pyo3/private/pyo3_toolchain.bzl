@@ -1,5 +1,6 @@
 """PyO3 Toolchains"""
 
+load("@bazel_skylib//rules:common_settings.bzl", "BuildSettingInfo")
 load("@rules_rust//rust:defs.bzl", "rust_common")
 
 PYO3_TOOLCHAIN = str(Label("//pyo3:toolchain_type"))
@@ -69,6 +70,7 @@ def _pyo3_toolchain_impl(ctx):
         platform_common.ToolchainInfo(
             make_variable_info = make_variable_info,
             python_libs = depset(libs),
+            experimental_stubgen = ctx.attr._experimental_stubgen[BuildSettingInfo].value,
         ),
         make_variable_info,
         DefaultInfo(files = depset()),
@@ -126,7 +128,11 @@ annotations = {
 ```
 """,
     implementation = _pyo3_toolchain_impl,
-    attrs = {},
+    attrs = {
+        "_experimental_stubgen": attr.label(
+            default = Label("//pyo3/settings:experimental_stubgen"),
+        ),
+    },
     toolchains = [
         "@rules_python//python/cc:toolchain_type",
         "@rules_python//python:toolchain_type",
@@ -152,6 +158,7 @@ def _rust_pyo3_toolchain_impl(ctx):
     return [
         platform_common.ToolchainInfo(
             pyo3 = ctx.attr.pyo3,
+            pyo3_introspection = ctx.attr.pyo3_introspection,
         ),
     ]
 
@@ -165,6 +172,11 @@ This toolchain is how the rules know which version of `pyo3` to link against.
     attrs = {
         "pyo3": attr.label(
             doc = "The PyO3 library.",
+            providers = [[rust_common.crate_info], [rust_common.crate_group_info]],
+            mandatory = True,
+        ),
+        "pyo3_introspection": attr.label(
+            doc = "The PyO3 introspection library.",
             providers = [[rust_common.crate_info], [rust_common.crate_group_info]],
             mandatory = True,
         ),
@@ -202,5 +214,39 @@ def _current_rust_pyo3_toolchain_impl(ctx):
 current_rust_pyo3_toolchain = rule(
     doc = "A rule for accessing the `rust_pyo3_toolchain.pyo3` library from the current configuration.",
     implementation = _current_rust_pyo3_toolchain_impl,
+    toolchains = [RUST_PYO3_TOOLCHAIN],
+)
+
+def _current_rust_pyo3_introspection_toolchain_impl(ctx):
+    toolchain = ctx.toolchains[RUST_PYO3_TOOLCHAIN]
+    target = toolchain.pyo3_introspection
+
+    providers = []
+
+    # TODO: Remove this hack when we can just pass the input target's
+    # DefaultInfo provider through. Until then, we need to construct
+    # a new DefaultInfo provider with the files from the input target's
+    # provider.
+    providers.append(
+        DefaultInfo(
+            files = target[DefaultInfo].files,
+            runfiles = target[DefaultInfo].default_runfiles,
+        ),
+    )
+
+    if rust_common.crate_info in target:
+        providers.append(target[rust_common.crate_info])
+
+    if rust_common.dep_info in target:
+        providers.append(target[rust_common.dep_info])
+
+    if rust_common.crate_group_info in target:
+        providers.append(target[rust_common.crate_group_info])
+
+    return providers
+
+current_rust_pyo3_introspection_toolchain = rule(
+    doc = "A rule for accessing the `rust_pyo3_toolchain.pyo3_introspection` library from the current configuration.",
+    implementation = _current_rust_pyo3_introspection_toolchain_impl,
     toolchains = [RUST_PYO3_TOOLCHAIN],
 )

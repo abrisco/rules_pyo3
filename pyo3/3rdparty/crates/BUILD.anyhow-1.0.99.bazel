@@ -21,7 +21,7 @@ cargo_toml_env_vars(
 )
 
 rust_library(
-    name = "proc_macro2",
+    name = "anyhow",
     srcs = glob(
         include = ["**/*.rs"],
         allow_empty = True,
@@ -39,10 +39,11 @@ rust_library(
         ],
     ),
     crate_features = [
-        "proc-macro",
+        "default",
+        "std",
     ],
     crate_root = "src/lib.rs",
-    edition = "2021",
+    edition = "2018",
     rustc_env_files = [
         ":cargo_toml_env_vars",
     ],
@@ -51,7 +52,7 @@ rust_library(
     ],
     tags = [
         "cargo-bazel",
-        "crate-name=proc-macro2",
+        "crate-name=anyhow",
         "manual",
         "noclippy",
         "norustfmt",
@@ -77,12 +78,16 @@ rust_library(
         "@rules_rust//rust/platform:i686-unknown-linux-gnu": [],
         "@rules_rust//rust/platform:powerpc-unknown-linux-gnu": [],
         "@rules_rust//rust/platform:riscv32imc-unknown-none-elf": [],
+        "@rules_rust//rust/platform:riscv64gc-unknown-linux-gnu": [],
         "@rules_rust//rust/platform:riscv64gc-unknown-none-elf": [],
         "@rules_rust//rust/platform:s390x-unknown-linux-gnu": [],
         "@rules_rust//rust/platform:thumbv7em-none-eabi": [],
         "@rules_rust//rust/platform:thumbv8m.main-none-eabi": [],
+        "@rules_rust//rust/platform:wasm32-unknown-emscripten": [],
         "@rules_rust//rust/platform:wasm32-unknown-unknown": [],
         "@rules_rust//rust/platform:wasm32-wasip1": [],
+        "@rules_rust//rust/platform:wasm32-wasip1-threads": [],
+        "@rules_rust//rust/platform:wasm32-wasip2": [],
         "@rules_rust//rust/platform:x86_64-apple-darwin": [],
         "@rules_rust//rust/platform:x86_64-apple-ios": [],
         "@rules_rust//rust/platform:x86_64-linux-android": [],
@@ -95,10 +100,9 @@ rust_library(
         "@rules_rust//rust/platform:x86_64-unknown-uefi": [],
         "//conditions:default": ["@platforms//:incompatible"],
     }),
-    version = "1.0.94",
+    version = "1.0.99",
     deps = [
-        "@rpyo3c__proc-macro2-1.0.94//:build_script_build",
-        "@rpyo3c__unicode-ident-1.0.18//:unicode_ident",
+        "@rpyo3c__anyhow-1.0.99//:build_script_build",
     ],
 )
 
@@ -122,7 +126,8 @@ cargo_build_script(
         ],
     ),
     crate_features = [
-        "proc-macro",
+        "default",
+        "std",
     ],
     crate_name = "build_script_build",
     crate_root = "build.rs",
@@ -138,19 +143,22 @@ cargo_build_script(
             "WORKSPACE.bazel",
         ],
     ),
-    edition = "2021",
-    pkg_name = "proc-macro2",
+    edition = "2018",
+    pkg_name = "anyhow",
+    rustc_env_files = [
+        ":cargo_toml_env_vars",
+    ],
     rustc_flags = [
         "--cap-lints=allow",
     ],
     tags = [
         "cargo-bazel",
-        "crate-name=proc-macro2",
+        "crate-name=anyhow",
         "manual",
         "noclippy",
         "norustfmt",
     ],
-    version = "1.0.94",
+    version = "1.0.99",
     visibility = ["//visibility:private"],
 )
 
