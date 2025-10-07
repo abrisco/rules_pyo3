@@ -5,6 +5,10 @@ Bazel rules for [PyO3](https://pyo3.rs/v0.22.2/).
 These rules use the hermetic toolchain infrastructure from [rules_python](https://github.com/bazelbuild/rules_python) to
 build PyO3 extension modules to be as reproducible as possible.
 
+## ARCHIVED
+
+This repository was migrated to [`rules_rust/extensions/pyo3`](https://github.com/bazelbuild/rules_rust/tree/b41b704199adf625745c5df5b9e06f283fa32714/extensions/pyo3) in [bazelbuild/rules_rust#3648](https://github.com/bazelbuild/rules_rust/pull/3648). Development will continue there.
+
 ## Setup
 
 In order to use `rules_pyo3` it's recommended to first setup your `rules_rust`
