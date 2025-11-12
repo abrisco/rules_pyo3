@@ -47,6 +47,16 @@ jobs:
       - name: Test (Windows)
         run: bazel $env:BAZEL_STARTUP_FLAGS test //...
         if: startswith(runner.os, 'Windows')
+      
+      # Build and test the examples
+      - name: Examples string_sum (Unix)
+        working-directory: ./examples/string_sum
+        run: bazel ${BAZEL_STARTUP_FLAGS[@]} test //...
+        if: startswith(runner.os, 'Windows') != true
+      - name: Examples string_sum (Windows)
+        working-directory: ./examples/string_sum
+        run: bazel $env:BAZEL_STARTUP_FLAGS test //...
+        if: startswith(runner.os, 'Windows')
 
   ci-buildifier:
     runs-on: ubuntu-latest

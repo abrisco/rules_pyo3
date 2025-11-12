@@ -1,0 +1,18 @@
+"""
+An example module using the string_sum example from https://pyo3.rs/latest/#using-rust-from-python.
+
+Because we are not using any external crates or custom rust toolchains,
+we can rely on the transient rust_rules dependency.
+"""
+
+module(
+    name = "string_sum_example",
+    version = "0.0.0",
+)
+
+bazel_dep(name = "rules_python", version = "1.0.0")
+bazel_dep(name = "rules_pyo3", version = "0.0.0")
+local_path_override(
+    module_name = "rules_pyo3",
+    path = "../..",
+)

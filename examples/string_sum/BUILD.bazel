@@ -1,0 +1,14 @@
+load("@rules_pyo3//pyo3:defs.bzl", "pyo3_extension")
+load("@rules_python//python:defs.bzl", "py_test")
+
+pyo3_extension(
+    name = "string_sum",
+    srcs = ["string_sum.rs"],
+    edition = "2021",
+)
+
+py_test(
+    name = "string_sum_test",
+    srcs = ["string_sum_test.py"],
+    deps = [":string_sum"],
+)
